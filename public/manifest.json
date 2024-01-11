@@ -15,7 +15,7 @@
             "https://*/*",
             "http://*/*"
             ],
-            "js": ["scripts/checkbox.js"]
+            "js": ["scripts/checkbox.js", "scripts/clickjacking.js"]
         }
     ],
     "permissions": [
