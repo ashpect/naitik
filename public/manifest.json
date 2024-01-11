@@ -21,11 +21,27 @@
     "permissions": [
         "storage",
         "activeTab",
-        "scripting"
+        "scripting",
+        "alarms"
     ],
     "host_permissions": [
         "https://*/*",
         "http://*/*"
-    ]
-
+    ],
+    "commands": {
+        "_execute_action": {
+          "suggested_key": {
+            "default": "Ctrl+B",
+            "mac": "Command+B"
+          }
+        }
+      },
+      "background": {
+        "service_worker": "scripts/service-worker.js",
+        "type": "module"
+      },
+      "minimum_chrome_version": "102",
+      "omnibox": {
+        "keyword": "api"
+      }
 }  
