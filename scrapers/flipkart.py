@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-import csv
+import json
 def flip(prod):
     prod=prod.replace(" ","%20")
     chrome_options = Options()
@@ -27,11 +27,8 @@ def flip(prod):
             }
             products_data.append(product_data)
     driver.quit()
-    csv_file_path = 'products_data.csv'
-    with open(csv_file_path, 'w', newline='', encoding='utf-8') as csvfile:
-        fieldnames = ['Product Name', 'Product Price', 'Product Picture URL',"Flipkart URL"]
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-        for product_data in products_data:
-            writer.writerow(product_data)
-    print(f"Scraped data saved to {csv_file_path}")
+    print(product_data)
+    if products_data:
+        return json.dumps(products_data[:10],indent=2)
+    else: 
+        return ""

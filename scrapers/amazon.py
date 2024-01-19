@@ -26,12 +26,6 @@ def amazon(prod):
                 if("https" not in url): url="https://amazon.in"+url
                 data_list.append({'Image URL': image, 'Product Name': name_text, 'Price': price_text,"Url": url})
     if data_list:
-        csv_filename = "output.csv"
-        fields = ['Image URL', 'Product Name', 'Price',"Url"]
-        with open(csv_filename, mode='w', newline='', encoding='utf-8') as csv_file:
-            writer = csv.DictWriter(csv_file, fieldnames=fields)
-            writer.writeheader()
-            writer.writerows(data_list)
-        print(f"Data has been written to {csv_filename}")
-    else:
-        print("No data to write.")
+        return json.dumps(data_list[:10],indent=2)
+    else: 
+        return ""
