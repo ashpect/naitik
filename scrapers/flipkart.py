@@ -27,8 +27,7 @@ def flip(prod):
             }
             products_data.append(product_data)
     driver.quit()
-    print(product_data)
     if products_data:
-        return json.dumps(products_data[:10],indent=2)
+        return json.dumps(products_data[:min(10,len(product_data))],indent=2)
     else: 
         return ""
