@@ -64,8 +64,11 @@ nodeType: "HTML_ELEMENT"
 var domTree = createDOMTreeAndUpdateAttributes(rootElement, node.nid, node);
 
 // Output the DOM tree
+console.log('DOM Tree:');
 console.log(JSON.stringify(domTree, null, 2));
+console.log('DOM Tree 2:');
 console.log(contents);
+console.log('DOM Tree 3:');
   
 
 function getElementByNaitikID(nid) {
