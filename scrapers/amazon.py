@@ -3,7 +3,6 @@ import json
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from multiprocessing import Pool
-import csv
 def amazon(prod):
     prod.replace(" ","+")
     chrome_options = Options()
