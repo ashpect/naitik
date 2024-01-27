@@ -113,8 +113,6 @@ pattern_labels = ['Forced Action', 'Misdirection', 'Not Dark Pattern', 'Obstruct
                   'Scarcity', 'Sneaking', 'Social Proof', 'Urgency']
 label_mapping = {f'LABEL_{index}': label for index, label in enumerate(pattern_labels)}
 
-print(label_mapping)
-
 def call_hugging_face_api(input_string):
     # Single Class model api
     # api_url = 'https://api-inference.huggingface.co/models/h4shk4t/darkpatternLLM'
@@ -145,9 +143,6 @@ def handleapi_response(api_response):
     label = first_dictionary['label']
     score = first_dictionary['score']
 
-    # Print the values
-    print(f"Label: {label}, Score: {score}")
-    print(label_mapping[label])
     if (label_mapping[label] == "Not Dark Pattern"):
         return "NODP"
     else:
@@ -168,7 +163,6 @@ def checkdarkpattern():
             # Testing purposes to not overload huggingface
             api_response = [[{'label': 'LABEL_7', 'score': 0.9925353527069092}, {'label': 'LABEL_3', 'score': 0.0028718383982777596}, {'label': 'LABEL_4', 'score': 0.0011883211554959416}, {'label': 'LABEL_0', 'score': 0.0010276654502376914}, {'label': 'LABEL_5', 'score': 0.0007491591386497021}, {'label': 'LABEL_1', 'score': 0.0006587384850718081}, {'label': 'LABEL_6', 'score': 0.0005630258820019662}, {'label': 'LABEL_2', 'score': 0.0004058541962876916}]]
             check = handleapi_response(api_response)
-            print(check)
             if check != "NODP":
                 result_list[key] = check
 
