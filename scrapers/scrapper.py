@@ -8,6 +8,8 @@ import string
 import random
 import requests
 import base64
+import datetime
+
 
 con = sqlite3.connect("dark.db", check_same_thread=False)
 app = Flask(__name__)
@@ -31,6 +33,23 @@ try:
         img VARCHAR(200),
         htmlcontent varchar(200),
         tag VARCHAR(75)
+    );''')
+except:
+     print("table exists, continuing")
+
+try: 
+    cur.execute('''CREATE TABLE model (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        website_name VARCHAR(200),
+        Date DATE,
+        Forced_Action INT DEFAULT 0,
+        Misdirection INT DEFAULT 0,
+        Not_Dark_Pattern INT DEFAULT 0,
+        Obstruction INT DEFAULT 0,
+        Scarcity INT DEFAULT 0,
+        Sneaking INT DEFAULT 0,
+        Social_Proof INT DEFAULT 0,
+        Urgency INT DEFAULT 0
     );''')
 except:
      print("table exists, continuing")
@@ -155,9 +174,6 @@ def checkdarkpattern():
         }
 
         for key, value in input_json.items():
-
-            # api_response = call_hugging_face_api(value)
-            # Testing purposes to not overload huggingface
             api_response = [[{'label': 'LABEL_7', 'score': 0.9925353527069092}, {'label': 'LABEL_3', 'score': 0.0028718383982777596}, {'label': 'LABEL_4', 'score': 0.0011883211554959416}, {'label': 'LABEL_0', 'score': 0.0010276654502376914}, {'label': 'LABEL_5', 'score': 0.0007491591386497021}, {'label': 'LABEL_1', 'score': 0.0006587384850718081}, {'label': 'LABEL_6', 'score': 0.0005630258820019662}, {'label': 'LABEL_2', 'score': 0.0004058541962876916}]]
             check = handleapi_response(api_response)
             if check != "NODP":
@@ -168,6 +184,24 @@ def checkdarkpattern():
     except Exception as e:
         print(e)
         return jsonify({'error': str(e)})
+    
+@app.route("/perform", methods=["POST"])
+def perform():
+    website_name =request.form.get("URL")
+    patterns = request.form.get("dark")
+    x = datetime.datetime.now()
+    existing_row = con.execute("SELECT * FROM model WHERE website_name = ? AND Date = ?", (website_name, x)).fetchone()
+    if(existing_row is None):    
+        placeholders = ', '.join(['?'] * (len(patterns) + 3))  # +3 for website_name, count, Date
+        columns = ', '.join(['website_name', 'Date'] + list(patterns.keys()))
+        values = [website_name, x] + [patterns.get(label, 0) for label in patterns.keys()]
+        con.execute(f"INSERT INTO model ({columns}) VALUES ({placeholders})", values)
+        five_days_ago = datetime.datetime.now() - datetime.timedelta(days=5)
+        con.execute("DELETE FROM model WHERE Date < ?", (five_days_ago.strftime('%Y-%m-%d %H:%M:%S'),))
+        con.commit()
+
+    return None
+
 
 if __name__ == '__main__':
     app.run()
