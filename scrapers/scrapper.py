@@ -3,11 +3,11 @@ from flipkart import flip
 from flask import Flask, request, jsonify
 import sqlite3
 from flask_cors import CORS
-from werkzeug.utils import secure_filename
 import os
 import string
 import random
 import requests
+import base64
 
 con = sqlite3.connect("dark.db", check_same_thread=False)
 app = Flask(__name__)
@@ -74,10 +74,12 @@ def getpattern():
         rows = cur.fetchall()
         result = []
         for row in rows:
+            with open(row[2], "rb") as image_file:
+                encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
             pattern = {
                 'id': row[0],
                 'website_name': row[1],
-                'img': row[2],
+                'img': encoded_image,
                 'htmlcontent': row[3],
                 'tag': row[4]
             }
@@ -89,15 +91,11 @@ def getpattern():
 @app.route("/approve",methods=["POST"])
 def approval():
     id = request.form.get("id")
-    if(request.form["approve"]):
-        cur.execute('''SELECT * FROM darkpatterns WHERE id = ?''', (id,))
-        row = cur.fetchone()
-        if row:
-            id, website_name, img, htmlcontent, tag = row
-            cur.execute('''INSERT INTO trainingdata (website_name, img, htmlcontent, tag)
-                            VALUES (?, ?, ?, ?)''', (website_name, img, htmlcontent, tag))
-
     cur.execute('''DELETE FROM darkpatterns WHERE id = ?''', (id,))
+    website_name, img, htmlcontent, tag = request.form.get("website"),request.form.get("img"),request.form.get("htmlcontent"),request.form.get("tag")
+    cur.execute('''INSERT INTO trainingdata (website_name, img, htmlcontent, tag)
+                        VALUES (?, ?, ?, ?)''', (website_name, img, htmlcontent, tag))
+
     con.commit()
     return "Done"
 
@@ -107,7 +105,6 @@ def servercheck():
     return jsonify({"message": "Server is running"})
 
 
-# -------- extension stuff ------
 
 pattern_labels = ['Forced Action', 'Misdirection', 'Not Dark Pattern', 'Obstruction',
                   'Scarcity', 'Sneaking', 'Social Proof', 'Urgency']
