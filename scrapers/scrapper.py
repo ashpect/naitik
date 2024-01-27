@@ -202,6 +202,48 @@ def perform():
 
     return None
 
+@app.route("/monitor",methods=["GET"])
+def monitor():
+    x = datetime.datetime.now()
+    cur.execute("Select * from model where Date = ?",(x))
+    rows = cur.fetchall()
+    result = []
+    for row in rows:
+        pattern = {
+            'id': row[0],
+            'website_name': row[1],
+            'forced_action': row[3],
+            'misdirection': row[4],
+            'not_dark_pattern': row[5],
+            'obstruction': row[6],
+            'scarcity': row[7],
+            'sneaking': row[8],
+            'social_proof': row[9],
+            'urgency': row[10],
+        }
+        result.append(pattern)
+    return jsonify(result)
+
+@app.route("/monitor",methods=["POST"])
+def monitor2():
+    cur.execute("Select * from model where id = ?",(request.form.get("id")))
+    rows = cur.fetchall()
+    result = []
+    for row in rows:
+        pattern = {
+            'id': row[0],
+            'date': row[2],
+            'forced_action': row[3],
+            'misdirection': row[4],
+            'not_dark_pattern': row[5],
+            'obstruction': row[6],
+            'scarcity': row[7],
+            'sneaking': row[8],
+            'social_proof': row[9],
+            'urgency': row[10],
+        }
+        result.append(pattern)
+    return jsonify(result)
 
 if __name__ == '__main__':
     app.run()
