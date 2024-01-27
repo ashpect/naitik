@@ -3,7 +3,7 @@ import axios from 'axios';
 import {VStack, Table, Thead, Tbody, Tr, Th, Td, Button, Image, Select } from '@chakra-ui/react';
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS } from "chart.js/auto";
-
+import Navbar from './navbar';
 
 const DarkPatternsList = () => {
   const [patterns, setPatterns] = useState([]);
@@ -39,8 +39,7 @@ const DarkPatternsList = () => {
       )
     );
   };
-  const websiteNames = patterns.map(pattern => pattern.website_name);
-  console.log()
+  const websiteNames = ["Google", "Facebook", "Google", "Twitter", "Facebook", "Instagram", "Google"];
   const occurrences = websiteNames.reduce((acc, website) => {
     acc[website] = (acc[website] || 0) + 1;
     return acc;
@@ -57,6 +56,8 @@ const DarkPatternsList = () => {
         hoverBackgroundColor: 'rgba(75,192,192,0.6)',
         hoverBorderColor: 'rgba(75,192,192,1)',
         data: Object.values(occurrences),
+        barPercentage: 0.8, // Adjust this value to control the width of the bars
+        categoryPercentage: 0.8, // Adjust this value to control the width of the bars
       },
     ],
   };
@@ -64,6 +65,7 @@ const DarkPatternsList = () => {
   console.log(websiteNames)
   return (
     <VStack spacing={4} align="stretch">
+      <Navbar/>
     <div style={{ margin: '4rem auto', width: '80%' }}>
     <Table variant="simple">
       <Thead>
@@ -102,9 +104,11 @@ const DarkPatternsList = () => {
       </Tbody>
     </Table>
     </div>
+    <div style={{margin:"auto", height:"70vh"}}>
     <Bar
         data={chartData}
       />
+    </div>
     </VStack>
 
   );
