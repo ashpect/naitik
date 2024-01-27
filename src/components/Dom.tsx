@@ -25,64 +25,29 @@ function Checkbox() {
                 nodeType: "HTML_ELEMENT"
                 }
             var nodeIdContentMap: { [key: string]: string } = {};
-            var mapOfDarkTexts: { [key: string]: string } = {};
-            const parentId = node.nid;
-            var score = 0;
-            var isDarkPattern = false;
+            const parentId = node.nid
 
+            // set naitik id
             rootElement.setAttribute('naitik-id', parentId);
             traverseAndUpdate(rootElement, parentId, node);
+            // create map
             iterateAndPopulateMap(node);
-            console.table(nodeIdContentMap);
-            console.log('End of Node ID Content Map');
-            //console.log(JSON.stringify(node, null, 2));
-            console.log('DOM Tree:');
+            console.log("Node id content Map")
+            console.log(nodeIdContentMap);
+            
+            // TODO ?? Basic clean map abhi (doable) or clean from backend? Depends on size of req and shit as poora content tree bhejna umm.
 
-            // ---- TESTING, CAUSE HUGGING FACE RATE LIMIT ----
-            //remove nodeIdContentmap entries with leaving only first 2 entries
-            var count = 0;
-            for (var key in nodeIdContentMap) {
-              if (!(count >= 6 && count <= 8)) {
-                delete nodeIdContentMap[key];
-              }
-              count++;
-            }
-            console.log('Node ID Content Map updated:', nodeIdContentMap);
-
-            const promises = [];
-            for (const key in nodeIdContentMap) {
-              // Add a time delay of 1 second between iterations
-              promises.push(
-                  new Promise<void>(resolve => {
-                      setTimeout(() => {
-                          makeApiRequest(nodeIdContentMap[key])
-                              .then(result => {
-                                  console.log('Score:', result.score);
-                                  console.log('Bool Value:', result.isDarkPattern);
-                                  if (result.isDarkPattern) {
-                                      mapOfDarkTexts[key] = nodeIdContentMap[key];
-                                  }
-                                  resolve(); // Resolve the promise after completion
-                              })
-                              .catch(error => {
-                                  console.error('Error:', error.message);
-                                  resolve(); // Resolve the promise even if there's an error
-                              });
-                      }, 1000); // 1000 milliseconds (1 second) delay
-                  })
-              );
-            }
-            Promise.all(promises)
-              .then(() => {
-                console.log('mapOfDarkTexts:', mapOfDarkTexts);
-              })
-              .catch(error => {
-                console.error('Error:', error.message);
-              });
+            // make request
+            makeApiRequest(nodeIdContentMap)
+              .then(results => {
+               console.log(results)
+                console.log("Kuch to chala hai");
+            })
+            .catch(error => {
+              console.error('Error:', error.message);
+            });
 
             console.log("OHOOO BHAIYA");
-            console.log('Score:', score);
-            console.log('Bool Value:', isDarkPattern);
 
             // ---- Helper Functions ----
             function traverseAndUpdate(element:any, parent:any, node:any) {
@@ -117,8 +82,7 @@ function Checkbox() {
             }
 
             function iterateAndPopulateMap(node:TreeNode) : void {
-              //clean logic
-              if(validContent(node.content))
+              if(cleanContent(node.content))
               {nodeIdContentMap[node.nid] = node.content;}
   
               for (var i = 0; i < node.children.length; i++) {
@@ -126,60 +90,37 @@ function Checkbox() {
               }
           }
 
-          function validContent(content:string) : boolean {
-            
-            // write cleaning logic here
-            if(content == null || content == "")
-            {
-              return false;
-            }
-            return true;
+          async function makeApiRequest(requestbody:{ [key: string]: string }) {
+            const apiUrl = 'http://127.0.0.1:5000/checkdarkpattern';
 
-          }
-
-          async function makeApiRequest(inputData:string) {
-            const apiUrl = 'https://api-inference.huggingface.co/models/h4shk4t/darkpatternLLM';
-            const accessToken = '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'; // Replace with your actual access token
-        
             const requestOptions = {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
+                    // 'Wesbite url': `add website url : TODO`
                 },
-                body: JSON.stringify(inputData)
+                body: JSON.stringify(requestbody)
             };
         
             try {
                 const response = await fetch(apiUrl, requestOptions);
-        
                 if (!response.ok) {
                     throw new Error(`API request failed with status: ${response.status}`);
                 }
-        
-                const responseData = await response.json();
-                // console.log('API Response:', responseData);
-                //parse the api response
-                var apiResponse = JSON.parse(JSON.stringify(responseData));
-                if(apiResponse[0][0].label == "LABEL_1")
-                {
-                  // possible dark pattern detected
-                  console.log("Possible Dark Pattern Detected");
-                  score = apiResponse[0][0].score;
-                  isDarkPattern = true;
-                }
-                else
-                {
-                  // no dark pattern detected
-                  console.log("No Dark Pattern Detected");
-                  score = apiResponse[0][0].score;
-                }
-                return { score , isDarkPattern };
+                return response.json();
 
             } catch (error:any) {
                 console.error('Error making API request:', error.message);
-                return { score , isDarkPattern };
             }
+        }
+
+        function cleanContent(content:string) : boolean {
+          // write cleaning logic here
+          if(content == null || content == "")
+          {
+            return false;
+          }
+          return true;
         }
 
         }

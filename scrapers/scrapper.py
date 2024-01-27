@@ -2,13 +2,16 @@ from amazon import amazon
 from flipkart import flip
 from flask import Flask, request, jsonify
 import sqlite3
+from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import os
 import string
 import random
+import requests
 
 con = sqlite3.connect("dark.db", check_same_thread=False)
 app = Flask(__name__)
+CORS(app)
 cur = con.cursor()
 try: 
     cur.execute('''CREATE TABLE darkpatterns (
@@ -83,7 +86,7 @@ def getpattern():
     except Exception as e:
         return str(e)
 
-@app.route("approve",methods=["POST"])
+@app.route("/approve",methods=["POST"])
 def approval():
     id = request.form.get("id")
     if(request.form["approve"]):
@@ -97,5 +100,83 @@ def approval():
     cur.execute('''DELETE FROM darkpatterns WHERE id = ?''', (id,))
     con.commit()
     return "Done"
+
+@app.route("/test",methods=["GET"])
+def servercheck():
+    print("server is running")
+    return jsonify({"message": "Server is running"})
+
+
+# -------- extension stuff ------
+
+pattern_labels = ['Forced Action', 'Misdirection', 'Not Dark Pattern', 'Obstruction',
+                  'Scarcity', 'Sneaking', 'Social Proof', 'Urgency']
+label_mapping = {f'LABEL_{index}': label for index, label in enumerate(pattern_labels)}
+
+print(label_mapping)
+
+def call_hugging_face_api(input_string):
+    # Single Class model api
+    # api_url = 'https://api-inference.huggingface.co/models/h4shk4t/darkpatternLLM'
+
+    # Multi Class model api
+    api_url = 'https://api-inference.huggingface.co/models/h4shk4t/darkpatternLLM-multiclass'
+    access_token = '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'
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {access_token}'
+    }
+
+    input_data = {
+        'inputs': input_string
+    }
+
+    response = requests.post(api_url, headers=headers, json=input_data)
+    if not response.ok:
+        raise Exception(f'API request failed with status: {response.status_code}')
+
+    return response.json()
+
+
+def handleapi_response(api_response):
+    first_element = api_response[0]
+    first_dictionary = first_element[0]
+    label = first_dictionary['label']
+    score = first_dictionary['score']
+
+    # Print the values
+    print(f"Label: {label}, Score: {score}")
+    print(label_mapping[label])
+    if (label_mapping[label] == "Not Dark Pattern"):
+        return "NODP"
+    else:
+        return label_mapping[label]
+
+
+@app.route("/checkdarkpattern", methods=["POST"])
+def checkdarkpattern():
+    try:
+
+        input_json = request.get_json()
+        result_list = {
+        }
+
+        for key, value in input_json.items():
+
+            # api_response = call_hugging_face_api(value)
+            # Testing purposes to not overload huggingface
+            api_response = [[{'label': 'LABEL_7', 'score': 0.9925353527069092}, {'label': 'LABEL_3', 'score': 0.0028718383982777596}, {'label': 'LABEL_4', 'score': 0.0011883211554959416}, {'label': 'LABEL_0', 'score': 0.0010276654502376914}, {'label': 'LABEL_5', 'score': 0.0007491591386497021}, {'label': 'LABEL_1', 'score': 0.0006587384850718081}, {'label': 'LABEL_6', 'score': 0.0005630258820019662}, {'label': 'LABEL_2', 'score': 0.0004058541962876916}]]
+            check = handleapi_response(api_response)
+            print(check)
+            if check != "NODP":
+                result_list[key] = check
+
+        return jsonify(result_list)
+
+    except Exception as e:
+        print(e)
+        return jsonify({'error': str(e)})
+
 if __name__ == '__main__':
     app.run()

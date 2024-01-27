@@ -1,0 +1,9 @@
+bs4
+selenium
+multiprocessing
+amazon 
+flipkart 
+flask 
+sqlite3
+flask_cors
+werkzeug.utils
