@@ -1,13 +1,18 @@
-import logo from './logo.svg';
-import './App.css';
-import DarkPatternsList from './dark.js';
+import React from 'react';
+import {
+  ChakraProvider,
+  Box,
+  theme,
+} from '@chakra-ui/react';
+import DarkPatternsList from './darj';
+
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <DarkPatternsList/>
-      </header>
-    </div>
+    <ChakraProvider theme={theme}>
+      <Box textAlign="center" fontSize="xl">
+          <DarkPatternsList/>
+      </Box>
+    </ChakraProvider>
   );
 }
 
