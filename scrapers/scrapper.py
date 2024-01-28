@@ -173,11 +173,11 @@ def checkdarkpattern():
         result_list = {
         }
 
-        for key, value in input_json.items():
+        for key, value in input_json["data"].items():
 
             api_response = call_hugging_face_api(value)
             # Testing purposes to not overload huggingface
-            # api_response = [[{'label': 'LABEL_7', 'score': 0.9925353527069092}, {'label': 'LABEL_3', 'score': 0.0028718383982777596}, {'label': 'LABEL_4', 'score': 0.0011883211554959416}, {'label': 'LABEL_0', 'score': 0.0010276654502376914}, {'label': 'LABEL_5', 'score': 0.0007491591386497021}, {'label': 'LABEL_1', 'score': 0.0006587384850718081}, {'label': 'LABEL_6', 'score': 0.0005630258820019662}, {'label': 'LABEL_2', 'score': 0.0004058541962876916}]]
+            # api_response = [[{'label': 'LABEL_1', 'score': 0.9925353527069092}, {'label': 'LABEL_3', 'score': 0.0028718383982777596}, {'label': 'LABEL_4', 'score': 0.0011883211554959416}, {'label': 'LABEL_0', 'score': 0.0010276654502376914}, {'label': 'LABEL_5', 'score': 0.0007491591386497021}, {'label': 'LABEL_7', 'score': 0.0006587384850718081}, {'label': 'LABEL_6', 'score': 0.0005630258820019662}, {'label': 'LABEL_2', 'score': 0.0004058541962876916}]]
             check = handleapi_response(api_response)
             if check != "NODP":
                 result_list[key] = check
@@ -192,35 +192,69 @@ def checkdarkpattern():
             #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4-3": "Obstruction",
             #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4-4": "Obstruction",
             # } 
-
+                
+        populateDbWithResult(result_list,input_json["website_url"])
         return jsonify(result_list)
 
     except Exception as e:
         print(e)
         return jsonify({'error': str(e)})
-    
-@app.route("/perform", methods=["POST"])
-def perform():
-    website_name =request.form.get("URL")
-    patterns = request.form.get("dark")
-    x = datetime.datetime.now().strftime('%Y-%m-%d')
+
+def populateDbWithResult(result_list,website_url):
+
+    pattern_result = [0] * len(pattern_labels)
+
+    for value in result_list.values():
+        if value in pattern_labels:
+            pattern_result[pattern_labels.index(value)] += 1
+
+    occurance_list = [{label: count} for label, count in zip(pattern_labels, pattern_result) if count != 0]
+
+    website_data = [
+    {"website_url": website_url}
+    ]
+    website_data.append(occurance_list)
+
+    # for data_dict in website_data[1]:
+    #     updated_data_dict = data_dict.copy()
+    #     for key in data_dict:
+    #         if key in label_mapping.values():
+    #             new_key = next(label for label, value in label_mapping.items() if value == key)
+    #             updated_data_dict[new_key] = updated_data_dict.pop(key)
+    #     data_dict.clear()
+    #     data_dict.update(updated_data_dict)
+    print(website_data)
+    perform(website_data)
+
+def perform(request_data):
+    website_name =request_data[0]["website_url"]
+    patterns = request_data[1][0]
+    x = "2024-01-29"
     existing_row = con.execute("SELECT * FROM model WHERE website_name = ? AND Date = ?", (website_name, x)).fetchone()
     if(existing_row is None):    
-        placeholders = ', '.join(['?'] * (len(patterns) + 3))  # +3 for website_name, count, Date
+        placeholders = ', '.join(['?'] * (len(patterns) + 2)) 
         columns = ', '.join(['website_name', 'Date'] + list(patterns.keys()))
-        values = [website_name, x] + [patterns.get(label, 0) for label in patterns.keys()]
+        try:
+            columns[columns.index("Forced Action")]="forced_action"
+        except:
+            pass
+        try:
+            columns[columns.index("Social Proof")]="social_proof"
+        except:
+            pass
+        values = [website_name, x] + [patterns[label] for label in patterns.keys()]
         con.execute(f"INSERT INTO model ({columns}) VALUES ({placeholders})", values)
         five_days_ago = datetime.datetime.now() - datetime.timedelta(days=5)
         con.execute("DELETE FROM model WHERE Date < ?", (five_days_ago.strftime('%Y-%m-%d %H:%M:%S'),))
         con.commit()
 
     return None
-
-@app.route("/monitor",methods=["GET"])
+@app.route("/monitor", methods=["GET"])
 def monitor():
     x = datetime.datetime.now().strftime('%Y-%m-%d')
-    rows= cur.execute("SELECT * FROM model WHERE Date = ?", (x,)).fetchall()
+    rows = cur.execute("SELECT * FROM model WHERE Date = ?", (x,)).fetchall()
     result = []
+
     for row in rows:
         pattern = {
             'id': row[0],
@@ -235,6 +269,7 @@ def monitor():
             'urgency': row[10],
         }
         result.append(pattern)
+
     return jsonify(result)
 
 @app.route("/monitor",methods=["POST"])

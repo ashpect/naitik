@@ -128,13 +128,18 @@ function Checkbox() {
             console.log("filteredReqBody")
             console.log(filteredRequestBody)
 
+            const finalRequestBody = {
+              website_url: window.location.href,
+              data: filteredRequestBody
+            };
+
             const requestOptions = {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     // 'Wesbite url': `add website url : TODO`
                 },
-                body: JSON.stringify(filteredRequestBody)
+                body: JSON.stringify(finalRequestBody)
             };
         
             try {

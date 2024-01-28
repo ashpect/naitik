@@ -7,7 +7,6 @@ function Server() {
         target: { tabId: tab.id! },
         func: () => {
 
-            
             console.log("Sending req")
             makeApiRequest()
             console.log("Request sent")
