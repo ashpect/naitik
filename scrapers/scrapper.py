@@ -174,10 +174,24 @@ def checkdarkpattern():
         }
 
         for key, value in input_json.items():
-            api_response = [[{'label': 'LABEL_7', 'score': 0.9925353527069092}, {'label': 'LABEL_3', 'score': 0.0028718383982777596}, {'label': 'LABEL_4', 'score': 0.0011883211554959416}, {'label': 'LABEL_0', 'score': 0.0010276654502376914}, {'label': 'LABEL_5', 'score': 0.0007491591386497021}, {'label': 'LABEL_1', 'score': 0.0006587384850718081}, {'label': 'LABEL_6', 'score': 0.0005630258820019662}, {'label': 'LABEL_2', 'score': 0.0004058541962876916}]]
+
+            api_response = call_hugging_face_api(value)
+            # Testing purposes to not overload huggingface
+            # api_response = [[{'label': 'LABEL_7', 'score': 0.9925353527069092}, {'label': 'LABEL_3', 'score': 0.0028718383982777596}, {'label': 'LABEL_4', 'score': 0.0011883211554959416}, {'label': 'LABEL_0', 'score': 0.0010276654502376914}, {'label': 'LABEL_5', 'score': 0.0007491591386497021}, {'label': 'LABEL_1', 'score': 0.0006587384850718081}, {'label': 'LABEL_6', 'score': 0.0005630258820019662}, {'label': 'LABEL_2', 'score': 0.0004058541962876916}]]
             check = handleapi_response(api_response)
             if check != "NODP":
                 result_list[key] = check
+
+            # Test response
+            # test_response_list = {
+            #     "root-1-1-1-3-1-2-0-0-3-2-6-3-2": "Urgency",
+            #     "root-1-1-1-3-1-2-0-0-3-2-6-3-3": "Urgency",
+            #     "root-1-1-1-3-1-2-0-0-3-2-6-3-3-0-0-0": "Urgency",
+            #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4": "Obstruction",
+            #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4-0": "Obstruction",
+            #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4-3": "Obstruction",
+            #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4-4": "Obstruction",
+            # } 
 
         return jsonify(result_list)
 

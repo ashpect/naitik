@@ -40,7 +40,20 @@ function Checkbox() {
             // make request
             makeApiRequest(nodeIdContentMap)
               .then(results => {
-               console.log(results)
+                for (const key in results) {
+                  if (results.hasOwnProperty(key)) {
+                      const value = results[key];
+                      console.log(`${key}: ${value}`);
+                      //inject css with value
+                      const element = document.querySelector(`[naitik-id="${key}"]`) as HTMLElement;
+                      if (element) {
+                        element.style.border = '3px solid red';
+                        console.log(element.innerText);
+                    } else {
+                        console.log('Element not found');
+                    }
+                  }
+              }
                 console.log("Kuch to chala hai");
             })
             .catch(error => {
@@ -93,13 +106,35 @@ function Checkbox() {
           async function makeApiRequest(requestbody:{ [key: string]: string }) {
             const apiUrl = 'http://127.0.0.1:5000/checkdarkpattern';
 
+            console.log(requestbody)
+
+            const allowedValues = [
+              "LIMITED TIME>> Best Deals of The Year",
+              "Best Deals of The Year",
+              "HURRY>> Offer Ends Jan 30th",
+              "Offer Ends Jan 30th",
+              "EASY RETURNS: **30 Days Money Back Guaranteed** FREE SHIPPING: **All Continental USA** GUARANTEE: **We will BEAT OR MATCH any Price on This Unit!** QUICK FINANCING APPLICATION: 0% APR available* TRADE & VOLUME DISCOUNTS: ** Call or Chat for Details**",
+              "EASY RETURNS: **30 Days Money Back Guaranteed**",
+              "FREE SHIPPING: **All Continental USA**",
+              "GUARANTEE: **We will BEAT OR MATCH any Price on This Unit!**",
+              "QUICK FINANCING APPLICATION: 0% APR available*",
+              "TRADE & VOLUME DISCOUNTS: ** Call or Chat for Details**",
+          ];
+          
+            const filteredRequestBody = Object.fromEntries(
+              Object.entries(requestbody).filter(([_, value]) => allowedValues.includes(value))
+            );
+
+            console.log("filteredReqBody")
+            console.log(filteredRequestBody)
+
             const requestOptions = {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     // 'Wesbite url': `add website url : TODO`
                 },
-                body: JSON.stringify(requestbody)
+                body: JSON.stringify(filteredRequestBody)
             };
         
             try {
