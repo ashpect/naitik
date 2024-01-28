@@ -39,8 +39,7 @@ const DarkPatternsList = () => {
       )
     );
   };
-  const websiteNames = ["Google", "Facebook", "Google", "Twitter", "Facebook", "Instagram", "Google"];
-  const occurrences = websiteNames.reduce((acc, website) => {
+  const websiteNames = patterns.map(pattern => pattern.website_name);  const occurrences = websiteNames.reduce((acc, website) => {
     acc[website] = (acc[website] || 0) + 1;
     return acc;
   }, {});
