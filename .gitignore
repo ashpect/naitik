@@ -1,16 +1,24 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+naitik_mini/logs
+naitik_mini/*.log
+naitik_mini/npm-debug.log*
+naitik_mini/yarn-debug.log*
+naitik_mini/yarn-error.log*
+naitik_mini/pnpm-debug.log*
+naitik_mini/lerna-debug.log*
+naitik_mini/node_modules
+naitik_mini/dist
+naitik_mini/dist-ssr
+naitik_mini/*.local
 
-node_modules
-dist
-dist-ssr
-*.local
+admin/node_modules
+admin/.pnp
+admin/.pnp.js
+admin/coverage
+admin/build
+
+scrapers/__pycache__
+scrapers/dark.db
+
 
 # Editor directories and files
 .vscode/*
