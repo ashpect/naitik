@@ -1,13 +1,7 @@
 // Navbar.js
 import React from 'react';
-import {
-  ChakraProvider,
-  Box,
-  Flex,
-  Spacer,
-  Link,
-  extendTheme,
-} from '@chakra-ui/react';
+import { ChakraProvider, Box, Flex, Spacer, extendTheme } from '@chakra-ui/react';
+import { Link as ReactRouterLink } from 'react-router-dom';
 
 const theme = extendTheme({
   components: {
@@ -26,16 +20,16 @@ const Navbar = () => {
     <ChakraProvider theme={theme}>
       <Box bg="teal.500" p={4}>
         <Flex alignItems="center">
-          <Link href="#" fontSize="xl" color="white" fontWeight="bold">
+          <ReactRouterLink to="/" style={{ fontSize: 'xl', color: 'white', fontWeight: 'bold' }}>
             Naitik
-          </Link>
+          </ReactRouterLink>
           <Spacer />
-          <Link href="#" color="white">
+          <ReactRouterLink to="/review" style={{ color: 'white', marginLeft: '4rem' }}>
             Review
-          </Link>
-          <Link href="#" color="white" ml={4}>
+          </ReactRouterLink>
+          <ReactRouterLink to="/" style={{ color: 'white', marginLeft: '4rem' }}>
             Monitor
-          </Link>
+          </ReactRouterLink>
         </Flex>
       </Box>
     </ChakraProvider>

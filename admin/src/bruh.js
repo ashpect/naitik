@@ -5,7 +5,7 @@ import { Line } from "react-chartjs-2";
 import { Chart as ChartJS } from "chart.js/auto";
 import Navbar from './navbar';
 
-const DarkPatternsList = () => {
+const Bruh = () => {
   const [patterns, setPatterns] = useState([]);
   const [chartData, setChartData] = useState(null);
  useEffect(() => {
@@ -18,27 +18,41 @@ const DarkPatternsList = () => {
       });
   }, []); 
 
-  const getChartData = (id) => {
-    axios.post('http://localhost:5000/monitor', { id })
+  const getChartData = (website_name) => {
+    axios.post('http://localhost:5000/monitor', {website_name})
       .then(response => {
         setChartData(response.data);
+        console.log(chartData)
       })
       .catch(error => {
         console.error('Error fetching chart data:', error);
       });
   };
 
-
+  if(chartData){
+    let dates = chartData.map(entry => entry.date)
+}
   return (
     <VStack spacing={4} align="stretch">
       <Navbar/>
       {chartData && (
-          <Line data={chartData}/>
-        )}
+        <div style={{height:"40rem", margin:"4rem",display:"flex",alignItems:"center", justifyContent:"center"}}>
+   <Line
+   data={{
+     labels: chartData.map(entry => entry.date),
+     datasets: Object.keys(chartData[0]).filter(key => key !== 'date').map(category => ({
+       label: category,
+       data: chartData.map(entry => entry[category]),
+     })),
+   }}
+ />
+ </div>
+    )}
     <div style={{ margin: '4rem auto', width: '80%' }}>
     <Table variant="simple">
       <Thead>
-      <Tr style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>          <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>Website Name</Th>
+      <Tr style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>          
+            <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>Website Name</Th>
           <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>Forced Action</Th>
           <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>Misdirection</Th>
           <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>Obstruction</Th>
@@ -49,25 +63,23 @@ const DarkPatternsList = () => {
         </Tr>
       </Thead>
       <Tbody>
-      <Tbody>
             {patterns.map(pattern => (
               <Tr key={pattern.id}>
                 <Td>
-                  <Button colorScheme="blue" onClick={() => getChartData(pattern.id)}>
-                    {pattern.websiteName}
+                  <Button colorScheme="blue" onClick={() => getChartData(pattern.website_name)}>
+                    {pattern.website_name}
                   </Button>
                 </Td>
-                <Td>{pattern.forcedAction}</Td>
+                <Td>{pattern.forced_action}</Td>
                 <Td>{pattern.misdirection}</Td>
                 <Td>{pattern.obstruction}</Td>
                 <Td>{pattern.scarcity}</Td>
                 <Td>{pattern.sneaking}</Td>
-                <Td>{pattern.socialProof}</Td>
+                <Td>{pattern.social_proof}</Td>
                 <Td>{pattern.urgency}</Td>
               </Tr>
             ))}
           </Tbody>
-      </Tbody>
     </Table>
     </div>
 
@@ -76,4 +88,4 @@ const DarkPatternsList = () => {
   );
 };
 
-export default DarkPatternsList
+export default Bruh

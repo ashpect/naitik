@@ -4,13 +4,12 @@ import {
   Box,
   theme,
 } from '@chakra-ui/react';
-import DarkPatternsList from './darj';
-
+import Bruh from './bruh';
 function Monitor() {
   return (
     <ChakraProvider theme={theme}>
       <Box textAlign="center" fontSize="xl">
-          <DarkPatternsList/>
+          <Bruh/>
       </Box>
     </ChakraProvider>
   );

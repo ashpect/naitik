@@ -189,7 +189,7 @@ def checkdarkpattern():
 def perform():
     website_name =request.form.get("URL")
     patterns = request.form.get("dark")
-    x = datetime.datetime.now()
+    x = datetime.datetime.now().strftime('%Y-%m-%d')
     existing_row = con.execute("SELECT * FROM model WHERE website_name = ? AND Date = ?", (website_name, x)).fetchone()
     if(existing_row is None):    
         placeholders = ', '.join(['?'] * (len(patterns) + 3))  # +3 for website_name, count, Date
@@ -204,9 +204,8 @@ def perform():
 
 @app.route("/monitor",methods=["GET"])
 def monitor():
-    x = datetime.datetime.now()
-    cur.execute("Select * from model where Date = ?",(x))
-    rows = cur.fetchall()
+    x = datetime.datetime.now().strftime('%Y-%m-%d')
+    rows= cur.execute("SELECT * FROM model WHERE Date = ?", (x,)).fetchall()
     result = []
     for row in rows:
         pattern = {
@@ -226,9 +225,10 @@ def monitor():
 
 @app.route("/monitor",methods=["POST"])
 def monitor2():
-    cur.execute("Select * from model where id = ?",(request.form.get("id")))
+    json_id = request.get_json()["website_name"]
+    cur.execute("SELECT * FROM model WHERE website_name = ?", (json_id,))    
     rows = cur.fetchall()
-    result = []
+    result=[]
     for row in rows:
         pattern = {
             'id': row[0],
