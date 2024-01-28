@@ -229,7 +229,7 @@ def populateDbWithResult(result_list,website_url):
 def perform(request_data):
     website_name =request_data[0]["website_url"]
     patterns = request_data[1][0]
-    x = "2024-01-29"
+    x = datetime.datetime.now().strftime('%Y-%m-%d')
     existing_row = con.execute("SELECT * FROM model WHERE website_name = ? AND Date = ?", (website_name, x)).fetchone()
     if(existing_row is None):    
         placeholders = ', '.join(['?'] * (len(patterns) + 2)) 
