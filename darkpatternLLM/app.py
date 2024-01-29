@@ -27,7 +27,12 @@ def predict():
     probabilities = torch.nn.functional.softmax(outputs.logits, dim=-1)
 
     # Convert the output to JSON and return it
-    return jsonify(probabilities.tolist())
+    probs = probabilities.tolist()[0]
+    prob_dict = {}
+    for i in range(len(probs)):
+        prob_dict["LABEL_"+str(i)] = probs[i]
+    # Arrange dictionary in descending order of probabilities (values in the dict)
+    return jsonify(prob_dict)
 
 if __name__ == '__main__':
     app.run(debug=False, port=8000)
