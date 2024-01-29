@@ -1,4 +1,4 @@
-function Server() {
+function CheckPrice() {
 
     const handleClick = async () => {
       let [tab] = await chrome.tabs.query({ active : true });
@@ -41,11 +41,11 @@ function Server() {
     return (
       <>
         <div className="card">
-          <button onClick={handleClick}>Get DOM
+          <button onClick={handleClick}>Check Price
           </button>
         </div>
       </>
     )
   }
   
-  export default Server
+  export default CheckPrice

@@ -137,7 +137,6 @@ function Checkbox() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // 'Wesbite url': `add website url : TODO`
                 },
                 body: JSON.stringify(finalRequestBody)
             };
