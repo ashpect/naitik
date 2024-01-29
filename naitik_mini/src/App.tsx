@@ -1,7 +1,7 @@
 import './App.css'
 import Checkbox from './components/Checkbox'
 import Dom from './components/Dom'
-import Server from './components/Server'
+import Checkprice from './components/CheckPrice'
 
 function App() {
 
@@ -10,7 +10,7 @@ function App() {
       <h1>Naitik</h1>
       <Checkbox />
       <Dom />
-      <Server />
+      <Checkprice />
       <p className="read-the-docs">
         Click on the logo to visit the website.
       </p>

@@ -9,6 +9,7 @@ import random
 import requests
 import base64
 import datetime
+import json
 
 
 con = sqlite3.connect("dark.db", check_same_thread=False)
@@ -164,20 +165,35 @@ def handleapi_response(api_response):
     else:
         return label_mapping[label]
 
+#### ---developement----
+def write_dictionary_to_file(dictionary, file_path):
+    try:
+        with open(file_path, 'w') as file:
+            json.dump(dictionary, file, indent=4)
+        print(f"Dictionary successfully written to {file_path}")
+    except Exception as e:
+        print(f"Error writing dictionary to file: {e}")
 
 @app.route("/checkdarkpattern", methods=["POST"])
 def checkdarkpattern():
     try:
 
         input_json = request.get_json()
+        # print(input_json['data'])
+        #write input_json['data'] to disk
+        
+        input_json['data'] = cleanup(input_json['data'])
+        write_dictionary_to_file(input_json['data'],"/Users/ashishkumarsingh/Desktop/dark/naitik/scrapers/naitikdata.txt")
+
+
         result_list = {
         }
 
         for key, value in input_json["data"].items():
 
-            api_response = call_hugging_face_api(value)
+            # api_response = call_hugging_face_api(value)
             # Testing purposes to not overload huggingface
-            # api_response = [[{'label': 'LABEL_1', 'score': 0.9925353527069092}, {'label': 'LABEL_3', 'score': 0.0028718383982777596}, {'label': 'LABEL_4', 'score': 0.0011883211554959416}, {'label': 'LABEL_0', 'score': 0.0010276654502376914}, {'label': 'LABEL_5', 'score': 0.0007491591386497021}, {'label': 'LABEL_7', 'score': 0.0006587384850718081}, {'label': 'LABEL_6', 'score': 0.0005630258820019662}, {'label': 'LABEL_2', 'score': 0.0004058541962876916}]]
+            api_response = [[{'label': 'LABEL_1', 'score': 0.9925353527069092}, {'label': 'LABEL_3', 'score': 0.0028718383982777596}, {'label': 'LABEL_4', 'score': 0.0011883211554959416}, {'label': 'LABEL_0', 'score': 0.0010276654502376914}, {'label': 'LABEL_5', 'score': 0.0007491591386497021}, {'label': 'LABEL_7', 'score': 0.0006587384850718081}, {'label': 'LABEL_6', 'score': 0.0005630258820019662}, {'label': 'LABEL_2', 'score': 0.0004058541962876916}]]
             check = handleapi_response(api_response)
             if check != "NODP":
                 result_list[key] = check
@@ -200,6 +216,37 @@ def checkdarkpattern():
         print(e)
         return jsonify({'error': str(e)})
 
+def cleanup(input_dict):
+    # Only allowes values starting with words, letters or spaces and if it contains '{'
+    filtered_dict = {}
+    for key, value in input_dict.items():
+        if (value == " ") or ('{' in value):
+            continue
+        elif value and (value[0].isalnum() or value[0].isalpha() or value[0] in {' '}):
+            filtered_dict[key] = value
+    filtered_dict = {key: value for key, value in filtered_dict.items() if '{' not in str(value)[:30]}
+
+    
+
+    # More Cleaning ?
+    return filtered_dict
+
+# def llama(payload):
+#     API_URL = "https://api-inference.huggingface.co/models/meta-llama/Llama-2-7b-chat-hf"
+#     headers = {"Authorization": "Bearer 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"}
+#     # json_body = {
+#     #     "inputs": f"[INST] <<SYS>> Your job is to talk like a pirate. Every reponse must sound like a pirate. <<SYS>> {payload} [/INST] ",
+#     #             "parameters": {"max_new_tokens":256, "top_p":0.9, "temperature":0.7}
+#     #     }
+#     data = json.dumps(payload)
+#     response = requests.request("POST", API_URL, headers=headers, data=data)
+#     return response.json()
+    
+# @app.route("/clean", methods=["POST"])
+# def clean():
+#     output = llama(request.json)
+#     return jsonify(output)
+
 def populateDbWithResult(result_list,website_url):
 
     pattern_result = [0] * len(pattern_labels)
@@ -213,17 +260,8 @@ def populateDbWithResult(result_list,website_url):
     website_data = [
     {"website_url": website_url}
     ]
-    website_data.append(occurance_list)
 
-    # for data_dict in website_data[1]:
-    #     updated_data_dict = data_dict.copy()
-    #     for key in data_dict:
-    #         if key in label_mapping.values():
-    #             new_key = next(label for label, value in label_mapping.items() if value == key)
-    #             updated_data_dict[new_key] = updated_data_dict.pop(key)
-    #     data_dict.clear()
-    #     data_dict.update(updated_data_dict)
-    print(website_data)
+    website_data.append(occurance_list)
     perform(website_data)
 
 def perform(request_data):
