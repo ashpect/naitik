@@ -12,10 +12,16 @@ function CheckPrice() {
             console.log("Request sent")
 
           async function makeApiRequest() {
-            const apiUrl = 'http://127.0.0.1:5000/test';
-        
+            const apiUrl = 'http://127.0.0.1:5000/search';
+            const finalRequestBody = {
+              product: "kreo Keyboard"  
+            };
             const requestOptions = {
-                method: 'GET',
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(finalRequestBody)
             };
         
             try {
