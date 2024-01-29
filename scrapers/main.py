@@ -65,10 +65,9 @@ def product():
     prod = input_json["product"]
     ama_data = amazon(prod)
     flip_data = flip(prod)
-    response_data = {
-        "amazon": ama_data,
-        "flipkart": flip_data
-    }
+    response_data = {}
+    if(flip_data): response_data["flipkart"]=flip_data
+    if(ama_data): response_data["amazon"]=ama_data
     return jsonify(response_data)
 
 @app.route("/report", methods=["POST"])
