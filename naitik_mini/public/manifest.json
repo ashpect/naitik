@@ -6,6 +6,9 @@
     "action": {
         "default_popup": "index.html"
     },
+    "icons": { "16": "images/logo_naitik.png",
+           "48": "images/logo_naitik.png",
+          "128": "images/logo_naitik.png" },
     "content_scripts" : [
         {
             "matches": [

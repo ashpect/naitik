@@ -10,6 +10,7 @@ import requests
 import base64
 import datetime
 import json
+import time
 
 
 con = sqlite3.connect("dark.db", check_same_thread=False)
@@ -66,9 +67,10 @@ def product():
     prod = input_json["product"]
     ama_data = amazon(prod)
     flip_data = flip(prod)
-    response_data = {}
-    if(flip_data): response_data["flipkart"]=flip_data
-    if(ama_data): response_data["amazon"]=ama_data
+    response_data = {
+        "amazon": ama_data,
+        "flipkart": flip_data
+    }
     return jsonify(response_data)
 
 @app.route("/report", methods=["POST"])
@@ -129,6 +131,23 @@ pattern_labels = ['Forced Action', 'Misdirection', 'Not Dark Pattern', 'Obstruct
                   'Scarcity', 'Sneaking', 'Social Proof', 'Urgency']
 label_mapping = {f'LABEL_{index}': label for index, label in enumerate(pattern_labels)}
 
+
+# Hosted on azure but very very slow latency rate
+def call_hosted_llm(input_string):
+    # api_url = 'http://20.204.86.227:80/predict'
+    api_url = 'http://127.0.0.1:8000/predict'
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    input_data = {
+        'text': input_string
+    }
+    response = requests.post(api_url, headers=headers, json=input_data)
+    if not response.ok:
+        raise Exception(f'API request failed with status: {response.status_code}')
+
+    return response.json()
+
 def call_hugging_face_api(input_string):
     # Single Class model api
     # api_url = 'https://api-inference.huggingface.co/models/h4shk4t/darkpatternLLM'
@@ -184,15 +203,29 @@ def checkdarkpattern():
         input_json['data'] = cleanup(input_json['data'])
         write_dictionary_to_file(input_json['data'],"/Users/ashishkumarsingh/Desktop/dark/naitik/scrapers/naitikdata.txt")
 
-
         result_list = {
         }
 
+        #for website : https://electricfireplacesdepot.com/collections/electric-fireboxe-inserts/products/dimplex-revillusion-36-inch-built-in-electric-fireplace-firebox-heater-rbf36#
+        input_json['data'] = {
+    "root-1-1-1-3-1-2-0-0-3-2-6-3-2": "LIMITED TIME>> Best Deals of The Year ",
+    "root-1-1-1-3-1-2-0-0-3-2-6-3-3": "HURRY>> Offer Ends Jan 30th ",
+    "root-1-1-1-3-1-2-0-0-3-2-6-3-4-0": " EASY RETURNS: **30 Days Money Back Guaranteed**",
+    "root-1-1-1-3-1-2-0-0-3-2-6-3-4-1": " FREE SHIPPING: **All Continental USA**",
+    "root-1-1-1-3-1-2-0-0-3-2-6-3-4-3": " QUICK FINANCING APPLICATION: 0% APR available*",
+    "root-1-1-1-3-1-2-0-0-3-2-6-3-4-4": " TRADE & VOLUME DISCOUNTS: ** Call or Chat for Details**",
+    "root-1-1-1-3-1-2-0-0-3-2-6-3-4-2": " GUARANTEE: **We will BEAT OR MATCH any Price on This Unit!**",
+    }
+        
+
+        
+
         for key, value in input_json["data"].items():
 
-            # api_response = call_hugging_face_api(value)
+            # api_response = call_hosted_llm(value)
+            api_response = call_hugging_face_api(value)
             # Testing purposes to not overload huggingface
-            api_response = [[{'label': 'LABEL_1', 'score': 0.9925353527069092}, {'label': 'LABEL_3', 'score': 0.0028718383982777596}, {'label': 'LABEL_4', 'score': 0.0011883211554959416}, {'label': 'LABEL_0', 'score': 0.0010276654502376914}, {'label': 'LABEL_5', 'score': 0.0007491591386497021}, {'label': 'LABEL_7', 'score': 0.0006587384850718081}, {'label': 'LABEL_6', 'score': 0.0005630258820019662}, {'label': 'LABEL_2', 'score': 0.0004058541962876916}]]
+            # api_response = [[{'label': 'LABEL_1', 'score': 0.9925353527069092}, {'label': 'LABEL_3', 'score': 0.0028718383982777596}, {'label': 'LABEL_4', 'score': 0.0011883211554959416}, {'label': 'LABEL_0', 'score': 0.0010276654502376914}, {'label': 'LABEL_5', 'score': 0.0007491591386497021}, {'label': 'LABEL_7', 'score': 0.0006587384850718081}, {'label': 'LABEL_6', 'score': 0.0005630258820019662}, {'label': 'LABEL_2', 'score': 0.0004058541962876916}]]
             check = handleapi_response(api_response)
             if check != "NODP":
                 result_list[key] = check
@@ -207,8 +240,9 @@ def checkdarkpattern():
             #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4-3": "Obstruction",
             #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4-4": "Obstruction",
             # } 
-                
+            # time.sleep(0.5)
         populateDbWithResult(result_list,input_json["website_url"])
+        print(result_list)
         return jsonify(result_list)
 
     except Exception as e:
@@ -224,8 +258,6 @@ def cleanup(input_dict):
         elif value and (value[0].isalnum() or value[0].isalpha() or value[0] in {' '}):
             filtered_dict[key] = value
     filtered_dict = {key: value for key, value in filtered_dict.items() if '{' not in str(value)[:30]}
-
-    
 
     # More Cleaning ?
     return filtered_dict

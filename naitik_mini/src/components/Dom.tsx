@@ -49,6 +49,20 @@ function Checkbox() {
                       if (element) {
                         element.style.border = '3px solid red';
                         console.log(element.innerText);
+                        element.style.border = '3px solid red';
+                        const boxDiv = document.createElement('div');
+                        boxDiv.style.width = '50px'; 
+                        boxDiv.style.height = '50px'; 
+                        boxDiv.style.border = '3px solid blue';
+                        boxDiv.style.position = 'absolute';
+                        boxDiv.style.left = `${element.offsetLeft + element.offsetWidth + 10}px`;
+                        boxDiv.style.top = `${element.offsetTop}px`; 
+                        boxDiv.innerText = value;
+                        document.body.appendChild(boxDiv);
+                        if (element.parentNode) {
+                          element.parentNode.appendChild(boxDiv);
+                        }
+                        console.log(element.innerText);
                     } else {
                         console.log('Element not found');
                     }
@@ -108,29 +122,29 @@ function Checkbox() {
 
             console.log(requestbody)
 
-            const allowedValues = [
-              "LIMITED TIME>> Best Deals of The Year",
-              "Best Deals of The Year",
-              "HURRY>> Offer Ends Jan 30th",
-              "Offer Ends Jan 30th",
-              "EASY RETURNS: **30 Days Money Back Guaranteed** FREE SHIPPING: **All Continental USA** GUARANTEE: **We will BEAT OR MATCH any Price on This Unit!** QUICK FINANCING APPLICATION: 0% APR available* TRADE & VOLUME DISCOUNTS: ** Call or Chat for Details**",
-              "EASY RETURNS: **30 Days Money Back Guaranteed**",
-              "FREE SHIPPING: **All Continental USA**",
-              "GUARANTEE: **We will BEAT OR MATCH any Price on This Unit!**",
-              "QUICK FINANCING APPLICATION: 0% APR available*",
-              "TRADE & VOLUME DISCOUNTS: ** Call or Chat for Details**",
-          ];
+          //   const allowedValues = [
+          //     "LIMITED TIME>> Best Deals of The Year",
+          //     "Best Deals of The Year",
+          //     "HURRY>> Offer Ends Jan 30th",
+          //     "Offer Ends Jan 30th",
+          //     "EASY RETURNS: **30 Days Money Back Guaranteed** FREE SHIPPING: **All Continental USA** GUARANTEE: **We will BEAT OR MATCH any Price on This Unit!** QUICK FINANCING APPLICATION: 0% APR available* TRADE & VOLUME DISCOUNTS: ** Call or Chat for Details**",
+          //     "EASY RETURNS: **30 Days Money Back Guaranteed**",
+          //     "FREE SHIPPING: **All Continental USA**",
+          //     "GUARANTEE: **We will BEAT OR MATCH any Price on This Unit!**",
+          //     "QUICK FINANCING APPLICATION: 0% APR available*",
+          //     "TRADE & VOLUME DISCOUNTS: ** Call or Chat for Details**",
+          // ];
           
-            const filteredRequestBody = Object.fromEntries(
-              Object.entries(requestbody).filter(([_, value]) => allowedValues.includes(value))
-            );
+            // const filteredRequestBody = Object.fromEntries(
+            //   Object.entries(requestbody).filter(([_, value]) => allowedValues.includes(value))
+            // );
 
-            console.log("filteredReqBody")
-            console.log(filteredRequestBody)
+            // console.log("filteredReqBody")
+            // console.log(filteredRequestBody)
 
             const finalRequestBody = {
               website_url: window.location.href,
-              data: filteredRequestBody
+              data: requestbody
             };
 
             const requestOptions = {
