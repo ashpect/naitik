@@ -49,11 +49,11 @@ const DarkPatternsList = () => {
     datasets: [
       {
         label: 'Occurrences',
-        backgroundColor: 'rgba(75,192,192,0.4)',
-        borderColor: 'rgba(75,192,192,1)',
+        backgroundColor: 'rgba(63,56,158,0.4)',
+        borderColor: 'rgba(63,56,158,1)',
         borderWidth: 1,
-        hoverBackgroundColor: 'rgba(75,192,192,0.6)',
-        hoverBorderColor: 'rgba(75,192,192,1)',
+        hoverBackgroundColor: 'rgba(63,56,158,0.6)',
+        hoverBorderColor: 'rgba(63,56,158,1)',
         data: Object.values(occurrences),
         barPercentage: 0.8, // Adjust this value to control the width of the bars
         categoryPercentage: 0.8, // Adjust this value to control the width of the bars
@@ -61,18 +61,17 @@ const DarkPatternsList = () => {
     ],
   };
 
-  console.log(websiteNames)
   return (
     <VStack spacing={4} align="stretch">
       <Navbar/>
     <div style={{ margin: '4rem auto', width: '80%' }}>
     <Table variant="simple">
       <Thead>
-      <Tr style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>          <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>Website Name</Th>
-          <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>Website Image</Th>
-          <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>Tag</Th>
-          <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>HTML Content</Th>
-          <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>Actions</Th>
+      <Tr style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Website Name</Th>
+          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Website Image</Th>
+          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Tag</Th>
+          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>HTML Content</Th>
+          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Actions</Th>
         </Tr>
       </Thead>
       <Tbody>
@@ -103,7 +102,7 @@ const DarkPatternsList = () => {
       </Tbody>
     </Table>
     </div>
-    <div style={{margin:"auto", height:"70vh"}}>
+    <div style={{margin:"4rem", height:"70vh"}}>
     <Bar
         data={chartData}
       />

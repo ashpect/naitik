@@ -23,7 +23,7 @@ def amazon(prod):
                 name_text = name[0].text if name else None
                 url= url[0]["href"]
                 if("https" not in url): url="https://amazon.in"+url
-                data_list.append({'Image URL': image, 'Product Name': name_text, 'Price': price_text,"Url": url})
+                data_list.append({'Image': image, 'Product': name_text, 'Price': price_text,"Url": url})
     if data_list:
         return json.dumps(data_list[:min(10,len(data_list))],indent=2)
     else: 

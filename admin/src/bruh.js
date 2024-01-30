@@ -51,22 +51,22 @@ const Bruh = () => {
     <div style={{ margin: '4rem auto', width: '80%' }}>
     <Table variant="simple">
       <Thead>
-      <Tr style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>          
-            <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>Website Name</Th>
-          <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>Forced Action</Th>
-          <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>Misdirection</Th>
-          <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>Obstruction</Th>
-          <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>Scarcity</Th>
-          <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>Sneaking</Th>
-          <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>Social Proof</Th>
-          <Th style={{ backgroundColor: '#2c3e50', color: '#FFF', important: 'true' }}>Urgency</Th>
+      <Tr style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>          
+            <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Website Name</Th>
+          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Forced Action</Th>
+          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Misdirection</Th>
+          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Obstruction</Th>
+          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Scarcity</Th>
+          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Sneaking</Th>
+          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Social Proof</Th>
+          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Urgency</Th>
         </Tr>
       </Thead>
       <Tbody>
             {patterns.map(pattern => (
               <Tr key={pattern.id}>
                 <Td>
-                  <Button colorScheme="blue" onClick={() => getChartData(pattern.website_name)}>
+                  <Button style={{backgroundColor:"#53389E"}} onClick={() => getChartData(pattern.website_name)}>
                     {pattern.website_name}
                   </Button>
                 </Td>

@@ -1,7 +1,8 @@
 // Navbar.js
 import React from 'react';
-import { ChakraProvider, Box, Flex, Spacer, extendTheme } from '@chakra-ui/react';
+import { ChakraProvider, Box, Flex, extendTheme, Link as ChakraLink, Image } from '@chakra-ui/react';
 import { Link as ReactRouterLink } from 'react-router-dom';
+import logo from "./logo.png";
 
 const theme = extendTheme({
   components: {
@@ -18,18 +19,20 @@ const theme = extendTheme({
 const Navbar = () => {
   return (
     <ChakraProvider theme={theme}>
-      <Box bg="teal.500" p={4}>
-        <Flex alignItems="center">
-          <ReactRouterLink to="/" style={{ fontSize: 'xl', color: 'white', fontWeight: 'bold' }}>
-            Naitik
+      <Box bg="#53389E" p={4}>
+        <Flex justifyContent="space-between" alignItems="center">
+          <ReactRouterLink to="/" style={{ fontSize: 'xl', color: 'white', fontWeight: 'bold', display: 'flex', gap: '2px', alignItems: 'center' }}>
+            <Image src={logo} alt="Logo" h="1.5rem" mr={"4px"} />
+            <span>Naitik</span>
           </ReactRouterLink>
-          <Spacer />
-          <ReactRouterLink to="/review" style={{ color: 'white', marginLeft: '4rem' }}>
-            Review
-          </ReactRouterLink>
-          <ReactRouterLink to="/" style={{ color: 'white', marginLeft: '4rem' }}>
-            Monitor
-          </ReactRouterLink>
+          <Flex>
+            <ChakraLink as={ReactRouterLink} to="/review" color="white" ml="4">
+              Review
+            </ChakraLink>
+            <ChakraLink as={ReactRouterLink} to="/" color="white" ml="4">
+              Monitor
+            </ChakraLink>
+          </Flex>
         </Flex>
       </Box>
     </ChakraProvider>

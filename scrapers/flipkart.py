@@ -20,10 +20,10 @@ def flip(prod):
             product_url = element.find('a', class_='s1Q9rs')['href']
             if("https" not in product_url): product_url="https://www.flipkart.com"+product_url
             product_data = {
-                'Product Name': product_name,
-                'Product Price': product_price,
-                'Product Picture URL': product_picture_url,
-                "Flipkart URL": product_url
+                'Name': product_name,
+                'Price': product_price,
+                'Image': product_picture_url,
+                "URL": product_url
             }
             products_data.append(product_data)
     driver.quit()
