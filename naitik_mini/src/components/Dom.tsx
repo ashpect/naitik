@@ -1,3 +1,5 @@
+import Card from "./card";
+import tag from "../Tag.png"
 function Checkbox() {
 
     interface TreeNode {
@@ -194,10 +196,7 @@ function Checkbox() {
 
     return (
       <>
-        <div className="card">
-          <button onClick={handleClick}>Get DOM
-          </button>
-        </div>
+          <Card heading="Get Dark Patterns" primaryButton="Show Dark Patterns" content="This website has potential dark patterns present. Utilise a trained model to detect them" imageSrc={tag} onPrimaryButtonClick={handleClick}></Card>
       </>
     )
   }

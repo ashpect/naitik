@@ -1,3 +1,5 @@
+import Card from "./card";
+import tag from "../CheckSquare.png";
 function Checkbox() {
 
   const handleClick = async () => {
@@ -27,11 +29,8 @@ function Checkbox() {
 
   return (
     <>
-      <div className="card">
-        <button onClick={handleClick}>Uncheck All The Checkboxes
-        </button>
-      </div>
-    </>
+    <Card heading="Checkboxes on this website were pre-checked" tertiaryButton="Revert back changes" content="We have unchecked all the checkboxes in this page." imageSrc={tag} onTertiaryButtonClick={handleClick}></Card>
+        </>
   )
 }
 
