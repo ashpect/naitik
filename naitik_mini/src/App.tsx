@@ -3,82 +3,38 @@ import Checkbox from './components/Checkbox';
 import Dom from './components/Dom';
 import Checkprice from './components/CheckPrice';
 import logo from "./logo.png";
-import { useState } from 'react';
-
+import FakeRevew from './components/bruh';
 function App() {
-  interface Item {
-    Image: string;
-    Price: string;
-    URL: string;
-    Name: string
-  }
-  const [data, setData] = useState<[Item[], Item[]]>([[], []]);
-  const [l, setL] = useState(0)
-  chrome.storage.local.get(["data"], (result: { data?: string }) => {
-    const parsedData = JSON.parse(result?.data || '[]');
-    setData(parsedData)
-    setL(Math.min(Object.keys(parsedData[0]).length, Object.keys(parsedData[1]).length));  });
-
   const handleClick = () => {
-    chrome.storage.local.remove(["data"]);
-  };
-
-  const openlink = (link:string) =>{
-    chrome.tabs.create({url: link});
+    console.log("You Were reported bitch")
   }
   return (
-    <div style={{ background: "white", minHeight: "25rem", display: "flex", flexDirection: "column" }}>
-      {l == 0 ? (
-        <>        
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "1rem" }}>
-          <img src={logo} style={{ height: "2.125rem" }} alt="Logo" />
-          <h1>Naitik</h1>
-        </div>
-          <div style={{ display: "flex" }}>
-            <Checkbox />
-            <Dom />
-            <Checkprice />
-          </div>
-          <p className="read-the-docs">
-            Click on the logo to visit the website.
-          </p>
-          </>
+    <div style={{ background: "white", minHeight: "25rem", display: "flex", flexDirection: "column", overflow:"auto", minWidth:"20rem"}}>  
+  <div style={{ background: "white", minHeight: "25rem", display: "flex", flexDirection: "column",borderRadius:"8px", overflow:"auto" }}>
+  <div style={{justifyContent:"space-between",display:"flex",height:"2rem",padding:"1rem"}}>        
+  <div style={{ display: "flex", justifyContent: "left", alignItems: "center", gap: "1rem"}}>
+    <img src={logo} style={{ height: "2em" }} alt="Logo" />
+    <h1>Naitik</h1>
+  </div>
+  <div style={{color:"#9599A1",display:"flex",alignItems:"center",fontSize:"1.75rem",marginLeft:"1rem"}}>
+    X
+  </div>
+  </div>
+    <div style={{ display: "flex", flexDirection:"column"}}>
+    <Checkprice />
+      <Checkbox />
+      <Dom/>
+      <FakeRevew/>
+    </div>
 
-          ) : (
-        <div style={{width:"35rem"}}>
-          <button style={{ height: "2rem", margin: "8px" }} onClick={handleClick}>
-            Go Back
-          </button>
-            <table>
-              <thead>
-                <tr>
-                  <th style={{backgroundColor:"#53389E", color:"white"}}> Flipkart Image</th>
-                  <th style={{backgroundColor:"#53389E", color:"white"}}>Flipkart Price</th>
-                  <th style={{backgroundColor:"#53389E", color:"white"}}>Check it Out!</th>
-                  <th style={{backgroundColor:"#53389E", color:"white"}}>Amazon Image</th>
-                  <th style={{backgroundColor:"#53389E", color:"white"}}>Amazon Price </th>
-                  <th style={{backgroundColor:"#53389E", color:"white"}}>Check it Out!</th>
-
-                </tr>
-              </thead>
-              <tbody>
-              {Array.from({ length: l }).map((_, index) => (
-              <tr key={index}>
-                <td><img style={{width:"4rem",height:"4rem"}}src={data[1][index]?.Image}/></td>
-                <td>{data[1][index]?.Price}</td>
-                <td>  <button style={{ height: "2rem", margin: "8px" }} 
-                                    onClick={() => openlink(data[1][index]?.URL)} >Flipkart it!</button></td>
-                <td><img style={{width:"4rem",height:"4rem"}} src={data[0][index]?.Image}/></td>
-                <td>{data[0][index]?.Price}</td>
-                <td>  <button style={{ height: "2rem", margin: "8px" }} 
-                                    onClick={() => openlink(data[0][index]?.URL)} >Amazon it!</button></td>
-
-              </tr>
-            ))}
-              </tbody>
-            </table>
-            </div>
-      )}
+    <p className="read-the-docs">
+      Click on the logo to visit the website.
+    </p>
+</div>
+<div style={{color:'black',flexDirection:"row",justifyContent:"space-between", display:"flex",alignItems:"center"}} >
+      <b>Detected something unusual? </b>
+      <button className='tertiary-button' onClick={handleClick}>Report</button>
+    </div>
     </div>
   );
 }

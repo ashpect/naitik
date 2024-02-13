@@ -61,6 +61,18 @@ try:
 except:
     print("images folder already exists, continuing")
 
+
+try: 
+    cur.execute('''CREATE TABLE price (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        website_name VARCHAR(200),
+        Date DATE,
+        Price int,
+    );''')
+except:
+     print("table exists, continuing")
+
+
 @app.route('/search', methods=['POST'])
 def product():
     input_json = request.get_json(force=True) 
@@ -72,6 +84,33 @@ def product():
         "flipkart": flip_data
     }
     return jsonify(response_data)
+
+@app.route('/search', methods=['GET'])
+def product():
+    cur.execute('''SELECT * FROM price where website_name="amazon"''')
+    rows = cur.fetchall()
+    result = []
+    for row in rows:
+        price = {
+            'id': row[0],
+            'date': row[2],
+            'Price': row[3]
+        }
+        result.append(price)
+    res={"amazon":result}
+    cur.execute('''SELECT * FROM price where website_name="flipkart"''')
+    rows = cur.fetchall()
+    result = []
+    for row in rows:
+        price = {
+            'id': row[0],
+            'date': row[2],
+            'Price': row[3]
+        }
+        result.append(price)
+    res["flipkart"]=result
+    return jsonify(res)
+
 
 @app.route("/report", methods=["POST"])
 def reportpattern():
