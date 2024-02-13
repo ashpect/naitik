@@ -47,18 +47,30 @@ function Checkbox() {
                       //inject css with value
                       const element = document.querySelector(`[naitik-id="${key}"]`) as HTMLElement;
                       if (element) {
+
                         element.style.border = '3px solid red';
                         console.log(element.innerText);
-                        element.style.border = '3px solid red';
                         const boxDiv = document.createElement('div');
-                        boxDiv.style.width = '50px'; 
-                        boxDiv.style.height = '50px'; 
                         boxDiv.style.border = '3px solid blue';
                         boxDiv.style.position = 'absolute';
                         boxDiv.style.left = `${element.offsetLeft + element.offsetWidth + 10}px`;
-                        boxDiv.style.top = `${element.offsetTop}px`; 
+                        boxDiv.style.top = `${element.offsetTop}px`;
                         boxDiv.innerText = value;
-                        document.body.appendChild(boxDiv);
+                        const textWidth = boxDiv.offsetWidth;
+                        boxDiv.style.width = `${textWidth}px`;
+
+                        // element.style.border = '3px solid red';
+                        // console.log(element.innerText);
+                        // const boxDiv = document.createElement('div');
+                        // boxDiv.style.width = '50px'; 
+                        // boxDiv.style.height = '50px'; 
+                        // boxDiv.style.border = '3px solid blue';
+                        // boxDiv.style.position = 'absolute';
+                        // boxDiv.style.left = `${element.offsetLeft + element.offsetWidth + 10}px`;
+                        // boxDiv.style.top = `${element.offsetTop}px`;
+                        // boxDiv.innerText = value;
+                        // document.body.appendChild(boxDiv);
+
                         if (element.parentNode) {
                           element.parentNode.appendChild(boxDiv);
                         }

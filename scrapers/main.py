@@ -12,7 +12,6 @@ import datetime
 import json
 import time
 
-
 con = sqlite3.connect("dark.db", check_same_thread=False)
 app = Flask(__name__)
 CORS(app)
@@ -167,6 +166,7 @@ def call_hugging_face_api(input_string):
 
     response = requests.post(api_url, headers=headers, json=input_data)
     if not response.ok:
+        print(response.text)
         raise Exception(f'API request failed with status: {response.status_code}')
 
     return response.json()
@@ -208,20 +208,16 @@ def checkdarkpattern():
 
         #for website : https://electricfireplacesdepot.com/collections/electric-fireboxe-inserts/products/dimplex-revillusion-36-inch-built-in-electric-fireplace-firebox-heater-rbf36#
         input_json['data'] = {
-    "root-1-1-1-3-1-2-0-0-3-2-6-3-2": "LIMITED TIME>> Best Deals of The Year ",
-    "root-1-1-1-3-1-2-0-0-3-2-6-3-3": "HURRY>> Offer Ends Jan 30th ",
-    "root-1-1-1-3-1-2-0-0-3-2-6-3-4-0": " EASY RETURNS: **30 Days Money Back Guaranteed**",
-    "root-1-1-1-3-1-2-0-0-3-2-6-3-4-1": " FREE SHIPPING: **All Continental USA**",
-    "root-1-1-1-3-1-2-0-0-3-2-6-3-4-3": " QUICK FINANCING APPLICATION: 0% APR available*",
-    "root-1-1-1-3-1-2-0-0-3-2-6-3-4-4": " TRADE & VOLUME DISCOUNTS: ** Call or Chat for Details**",
-    "root-1-1-1-3-1-2-0-0-3-2-6-3-4-2": " GUARANTEE: **We will BEAT OR MATCH any Price on This Unit!**",
-    }
+            "root-1-1-1-3-1-2-0-0-3-2-6-3-2-1": "LIMITED TIME>> Best Deals of The Year ",
+            "root-1-1-1-3-1-2-0-0-3-2-6-3-3": "HURRY>> Offer Ends Jan 30th ",
+            "root-1-1-1-3-1-2-0-0-3-2-6-3-4-0": " EASY RETURNS: **30 Days Money Back Guaranteed**",
+            "root-1-1-1-3-1-2-0-0-3-2-6-3-4-1": " FREE SHIPPING: **All Continental USA**",
+            "root-1-1-1-3-1-2-0-0-3-2-6-3-4-3": " QUICK FINANCING APPLICATION: 0% APR available*",
+            "root-1-1-1-3-1-2-0-0-3-2-6-3-4-4": " TRADE & VOLUME DISCOUNTS: ** Call or Chat for Details**",
+            "root-1-1-1-3-1-2-0-0-3-2-6-3-4-2": " GUARANTEE: **We will BEAT OR MATCH any Price on This Unit!**",
+        }
         
-
-        
-
         for key, value in input_json["data"].items():
-
             # api_response = call_hosted_llm(value)
             api_response = call_hugging_face_api(value)
             # Testing purposes to not overload huggingface
@@ -253,30 +249,40 @@ def cleanup(input_dict):
     # Only allowes values starting with words, letters or spaces and if it contains '{'
     filtered_dict = {}
     for key, value in input_dict.items():
-        if (value == " ") or ('{' in value):
+        if (value == " ") or ('{' in value) or len(value) >156:
             continue
         elif value and (value[0].isalnum() or value[0].isalpha() or value[0] in {' '}):
             filtered_dict[key] = value
     filtered_dict = {key: value for key, value in filtered_dict.items() if '{' not in str(value)[:30]}
+    
+    filtered_dict = cleanusingtries(filtered_dict)
 
-    # More Cleaning ?
     return filtered_dict
 
-# def llama(payload):
-#     API_URL = "https://api-inference.huggingface.co/models/meta-llama/Llama-2-7b-chat-hf"
-#     headers = {"Authorization": "Bearer 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"}
-#     # json_body = {
-#     #     "inputs": f"[INST] <<SYS>> Your job is to talk like a pirate. Every reponse must sound like a pirate. <<SYS>> {payload} [/INST] ",
-#     #             "parameters": {"max_new_tokens":256, "top_p":0.9, "temperature":0.7}
-#     #     }
-#     data = json.dumps(payload)
-#     response = requests.request("POST", API_URL, headers=headers, data=data)
-#     return response.json()
-    
-# @app.route("/clean", methods=["POST"])
-# def clean():
-#     output = llama(request.json)
-#     return jsonify(output)
+def cleanusingtries(A):
+    for a in A : A[a] = A[a].strip()
+    L = sorted([ a for a in A ])
+    root = {}
+
+    B = {}
+
+    for l in L :
+        V = l.split('-')
+        pre = -1
+        cur = root
+        for i in range ( 1, len (V) ):
+            v = int(V[i])
+            if v in cur :
+                if cur[v][1] == A[l] : break
+                pre = cur ; cur = cur[v][0] ; continue
+            else :
+                cur[v] = [ {} , "INVALID" ]
+                pre = cur ; cur = cur[v][0] ; continue
+        else :
+            pre[int(V[-1])][1] = A[l]
+            B[l] = A[l]
+
+    return B
 
 def populateDbWithResult(result_list,website_url):
 

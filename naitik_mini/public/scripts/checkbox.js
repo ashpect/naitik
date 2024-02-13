@@ -2,7 +2,7 @@ let allInputs = document.getElementsByTagName("input");
  if(allInputs.length > 0){
      for(let i=0; i<allInputs.length; i++){
          if (allInputs[i].type == 'checkbox'){
-           allInputs[i].checked = true;
+           allInputs[i].checked = false;
          //   count++;
          }
          }

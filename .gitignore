@@ -18,6 +18,8 @@ admin/build
 
 scrapers/__pycache__
 scrapers/dark.db
+scrapers/naitikdata.txt
+scrapers/z.txt
 
 
 # Editor directories and files
