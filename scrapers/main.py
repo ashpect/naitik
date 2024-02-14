@@ -80,17 +80,17 @@ except:
      print("table exists, continuing")
 
 
-@app.route('/search', methods=['POST'])
-def product():
-    input_json = request.get_json(force=True) 
-    prod = input_json["product"]
-    ama_data = amazon(prod)
-    flip_data = flip(prod)
-    response_data = {
-        "amazon": ama_data,
-        "flipkart": flip_data
-    }
-    return jsonify(response_data)
+# @app.route('/search', methods=['POST'])
+# def product():
+#     input_json = request.get_json(force=True) 
+#     prod = input_json["product"]
+#     ama_data = amazon(prod)
+#     flip_data = flip(prod)
+#     response_data = {
+#         "amazon": ama_data,
+#         "flipkart": flip_data
+#     }
+#     return jsonify(response_data)
 
 @app.route('/search', methods=['GET'])
 def product():
