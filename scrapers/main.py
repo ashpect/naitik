@@ -419,12 +419,13 @@ def monitor2():
 @app.route('/getsentiment', methods=['POST'])
 def sentiment():
     input_json = request.get_json(force=True) 
-    text = input_json["text"]
+    text = input_json["review"]
+    accountURL = input_json["accountURL"]
     scores = sid.polarity_scores(text)
     # Print sentiment scores
     if (scores['compound'] >= 0.80):
         scores['sentiment'] = 'Positive'
-        # reviews = getMoreReviews()
+        # reviews = getMoreReviews(accountURL)
         example_reviews = ["I absolutely love my new smartphone! The camera quality is outstanding, capturing every moment with stunning clarity. The battery life lasts all day, even with heavy use, and the sleek design fits perfectly in my hand. The user interface is intuitive and responsive, making it a joy to use. Overall, I couldn't be happier with my purchase!","This fitness tracker has transformed my workouts! It accurately tracks my steps, heart rate, and calories burned, providing valuable insights into my daily activity levels. The sleek design is comfortable to wear all day, and the battery life lasts for days on end. The accompanying app is easy to navigate and offers personalized coaching tips to help me reach my fitness goals. I highly recommend this tracker to anyone looking to take their fitness journey to the next level!","I recently purchased this cookware set, and it has exceeded my expectations! The pots and pans heat up quickly and distribute heat evenly, resulting in perfectly cooked meals every time. The non-stick coating makes cleanup a breeze, and the durable construction ensures that these pans will last for years to come. Plus, the variety of sizes included in the set makes it versatile enough for any cooking task. I'm thrilled with my purchase and can't wait to try out more recipes!","I'm blown away by the performance of these wireless earbuds! The sound quality is exceptional, with crisp highs and deep bass that make my favorite songs come to life. The earbuds fit snugly in my ears and stay put during even the most intense workouts. The battery life is impressive, lasting for hours on a single charge, and the charging case is compact and convenient for on-the-go use. I highly recommend these earbuds to anyone in the market for a new pair!"]
         reviews = example_reviews
         results = {}

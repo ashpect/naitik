@@ -1,36 +1,74 @@
-import tag from "../Tag.png"
-import Card from "./card";
+import { useState, FormEvent, ChangeEvent } from 'react';
 
-const handleClick = () => async () => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id!},
-    func: async () => {
-      const apiUrl = 'http://127.0.0.1/getsentiment';
+interface FormData {
+  review: string;
+  url: string;
+}
 
-      try {
-        const response = await fetch(apiUrl);
+function FormSubmitComponent() {
+  const [formData, setFormData] = useState<FormData>({
+    review: '',
+    url: ''
+  });
 
-        if (!response.ok) {
-          throw new Error(`API request failed with status: ${response.status}`);
-        }
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-        const responseData = await response.json();
-        console.log(responseData);
-        chrome.storage.local.set({ "data": JSON.stringify(responseData) });
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const apiUrl = 'http://127.0.0.1:3000/getsentiment';
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status: ${response.status}`);
       }
-    }
-  })
-};
 
-function FakeRevew() {
+      const responseData = await response.json();
+      console.log(responseData);
+    } catch (error) {
+      console.error('Failed to submit form data:', error);
+    }
+  };
+
   return (
-    <>
-      <Card heading="Fake Reviews Alert" primaryButton="Clear all fake reviews" secondaryButton="Summarize reviews" content="We have detected fake reviews on this page." imageSrc={tag} onPrimaryButtonClick={handleClick}></Card>
-    </>
+    <div>
+      <h2>Submit Form Data</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="review">Product Review:</label>
+          <input
+            type="text"
+            id="review"
+            name="review"
+            value={formData.review}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="url">URL of Account:</label>
+          <input
+            type="text"
+            id="url"
+            name="url"
+            value={formData.url}
+            onChange={handleInputChange}
+          />
+        </div>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
   );
 }
 
-export default FakeRevew;
+export default FormSubmitComponent;
