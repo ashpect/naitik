@@ -1,6 +1,7 @@
 from amazon import amazon
 from flipkart import flip
 from flask import Flask, request, jsonify
+from dotenv import load_dotenv
 import sqlite3
 from flask_cors import CORS
 import os
@@ -73,7 +74,7 @@ except:
 
 
 @app.route('/search', methods=['POST'])
-def product():
+def postproduct():
     input_json = request.get_json(force=True) 
     prod = input_json["product"]
     ama_data = amazon(prod)
@@ -85,7 +86,7 @@ def product():
     return jsonify(response_data)
 
 @app.route('/search', methods=['GET'])
-def product():
+def getproduct():
     cur.execute('''SELECT * FROM price where website_name="amazon"''')
     rows = cur.fetchall()
     result = []
@@ -192,7 +193,11 @@ def call_hugging_face_api(input_string):
 
     # Multi Class model api
     api_url = 'https://api-inference.huggingface.co/models/h4shk4t/darkpatternLLM-multiclass'
-    access_token = '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'
+    access_token = os.environ.get('ACCESS_TOKEN_BASIC')
+    # take the token from env file
+
+    # api_url = 'https://xolortql4954et50.us-east-1.aws.endpoints.huggingface.cloud'
+    # access_token = os.environ.get('ACCESS_TOKEN')
 
     headers = {
         'Content-Type': 'application/json',
@@ -200,8 +205,10 @@ def call_hugging_face_api(input_string):
     }
 
     input_data = {
-        'inputs': input_string
+        "inputs": input_string,
     }
+
+    print(input_data)
 
     response = requests.post(api_url, headers=headers, json=input_data)
     if not response.ok:
@@ -217,6 +224,14 @@ def handleapi_response(api_response):
     label = first_dictionary['label']
     score = first_dictionary['score']
 
+    if (label_mapping[label] == "Not Dark Pattern"):
+        return "NODP"
+    else:
+        return label_mapping[label]
+
+def handleapi_response_end(api_response):
+    label = api_response[0]['label']
+    score = api_response[0]['score']
     if (label_mapping[label] == "Not Dark Pattern"):
         return "NODP"
     else:
@@ -254,14 +269,19 @@ def checkdarkpattern():
             "root-1-1-1-3-1-2-0-0-3-2-6-3-4-3": " QUICK FINANCING APPLICATION: 0% APR available*",
             "root-1-1-1-3-1-2-0-0-3-2-6-3-4-4": " TRADE & VOLUME DISCOUNTS: ** Call or Chat for Details**",
             "root-1-1-1-3-1-2-0-0-3-2-6-3-4-2": " GUARANTEE: **We will BEAT OR MATCH any Price on This Unit!**",
+            "root-1-1-1-3-1-2-0-0-3-2-6-4": "82 Viewing This Product",
         }
         
         for key, value in input_json["data"].items():
+            print(value)
             # api_response = call_hosted_llm(value)
             api_response = call_hugging_face_api(value)
             # Testing purposes to not overload huggingface
             # api_response = [[{'label': 'LABEL_1', 'score': 0.9925353527069092}, {'label': 'LABEL_3', 'score': 0.0028718383982777596}, {'label': 'LABEL_4', 'score': 0.0011883211554959416}, {'label': 'LABEL_0', 'score': 0.0010276654502376914}, {'label': 'LABEL_5', 'score': 0.0007491591386497021}, {'label': 'LABEL_7', 'score': 0.0006587384850718081}, {'label': 'LABEL_6', 'score': 0.0005630258820019662}, {'label': 'LABEL_2', 'score': 0.0004058541962876916}]]
-            check = handleapi_response(api_response)
+            print(api_response)
+            # check = handleapi_response(api_response)
+            check = handleapi_response_end(api_response)
+            print(check)
             if check != "NODP":
                 result_list[key] = check
 
@@ -275,9 +295,11 @@ def checkdarkpattern():
             #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4-3": "Obstruction",
             #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4-4": "Obstruction",
             # } 
-            # time.sleep(0.5)
+            print("-------------next--------------")
         populateDbWithResult(result_list,input_json["website_url"])
+        write_dictionary_to_file(result_list,"/Users/ashishkumarsingh/Desktop/dark/naitik/scrapers/naitikfinal.txt")
         print(result_list)
+
         return jsonify(result_list)
 
     except Exception as e:
