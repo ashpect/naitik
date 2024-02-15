@@ -21,7 +21,8 @@ const Bruh = () => {
   const getChartData = (website_name) => {
     axios.post('http://localhost:5000/monitor', {website_name})
       .then(response => {
-        setChartData(response.data);
+        const chartDataWithoutId = response.data.map(({ id, ...rest }) => rest);
+        setChartData(chartDataWithoutId);
         console.log(chartData)
       })
       .catch(error => {

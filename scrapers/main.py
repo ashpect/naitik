@@ -84,31 +84,31 @@ def product():
     }
     return jsonify(response_data)
 
-@app.route('/search', methods=['GET'])
-def product():
-    cur.execute('''SELECT * FROM price where website_name="amazon"''')
-    rows = cur.fetchall()
-    result = []
-    for row in rows:
-        price = {
-            'id': row[0],
-            'date': row[2],
-            'Price': row[3]
-        }
-        result.append(price)
-    res={"amazon":result}
-    cur.execute('''SELECT * FROM price where website_name="flipkart"''')
-    rows = cur.fetchall()
-    result = []
-    for row in rows:
-        price = {
-            'id': row[0],
-            'date': row[2],
-            'Price': row[3]
-        }
-        result.append(price)
-    res["flipkart"]=result
-    return jsonify(res)
+# @app.route('/search', methods=['GET'])
+# def product():
+#     cur.execute('''SELECT * FROM price where website_name="amazon"''')
+#     rows = cur.fetchall()
+#     result = []
+#     for row in rows:
+#         price = {
+#             'id': row[0],
+#             'date': row[2],
+#             'Price': row[3]
+#         }
+#         result.append(price)
+#     res={"amazon":result}
+#     cur.execute('''SELECT * FROM price where website_name="flipkart"''')
+#     rows = cur.fetchall()
+#     result = []
+#     for row in rows:
+#         price = {
+#             'id': row[0],
+#             'date': row[2],
+#             'Price': row[3]
+#         }
+#         result.append(price)
+#     res["flipkart"]=result
+#     return jsonify(res)
 
 
 @app.route("/report", methods=["POST"])
