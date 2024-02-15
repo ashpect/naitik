@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import json
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 from multiprocessing import Pool
 import time
 
@@ -34,13 +35,18 @@ def amazon(prod):
 def getAccountReviews(url):
     chrome_options = Options()
     driver = webdriver.Chrome(options=chrome_options)
-    driver.get("https://www.amazon.in/Kreo-Anti-ghosting-Tenkeyless-Mechanical-Detachable/dp/B0C851T6PC/ref=sr_1_1_sspa?crid=ZEZWWAV9086E&keywords=kreo%2Bkeyboard&qid=1707936455&sprefix=kreo%2Bkeyboar%2Caps%2C204&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&th=1")
+    driver.get(url)
+    driver.refresh()
+    # driver.find_element(By.CLASS_NAME, "a-profile-content").click()
     # driver.get(url)
-    time.sleep(5)
     html_content = driver.page_source
-    amazon_results = BeautifulSoup(html_content, 'html5lib').find_all('div', class_='your-content-tab-container')[0].find_all('div', class_='your-content-card-wrapper  your-content-card-desktop')
-    print(amazon_results)
-    for result in amazon_results:
-        print(result.find('span', class_='your-content-card-with-background').text)
+    amazon_results = BeautifulSoup(html_content, 'html5lib').find_all('div', class_='your-content-tab-container')
+    results = amazon_results[0].find_all('span')
+    reviews = []
+    for result in results:
+        if len(result.text) > 19:
+            print(result.text)
+            reviews.append(result.text)
+    return reviews
 
 # getAccountReviews("https://www.amazon.in/gp/profile/amzn1.account.AHSESHGFL2RCGJYQNMMQX4XX6BCA/")
