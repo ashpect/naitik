@@ -7,6 +7,7 @@ import FakeRevew from './components/bruh';
 // import { useState } from 'react';
 // import DarkPatternSelector from './components/darkselector';
 
+import Scrapper from './components/scrap';
 function App() {
 
   // const [showDropdown, setShowDropdown] = useState(false); // State variable for dropdown visibility
@@ -122,6 +123,7 @@ function App() {
       <Checkbox />
       <Dom/>
       <FakeRevew/>
+      <Scrapper/>
     </div>
 
     <p className="read-the-docs">

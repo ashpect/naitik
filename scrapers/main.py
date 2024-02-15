@@ -14,6 +14,7 @@ import json
 import time
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from urllib.parse import urlparse
 
 # Download the VADER lexicon if you haven't already
 nltk.download('vader_lexicon')
@@ -84,7 +85,14 @@ except:
 @app.route('/search', methods=['POST'])
 def postproduct():
     input_json = request.get_json(force=True) 
-    prod = input_json["product"]
+    url = input_json["url"]
+    parsed_url = urlparse(url)
+    path = parsed_url.path
+    path_parts = path.split('/')
+    path_parts = list(filter(None, path_parts))
+    if len(path_parts) >= 1:
+        prod = path_parts[0]
+        print(prod)
     ama_data = amazon(prod)
     flip_data = flip(prod)
     response_data = {
@@ -469,7 +477,7 @@ def sentiment():
     else:
         return jsonify({"Single review score": scores['compound']})
 
-def getMoreReviews():
+def getMoreReviews(url):
     # Get more reviews from the website
     pass
 
