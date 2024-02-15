@@ -73,6 +73,8 @@
   padding: 10px 20px;
     border: none;
     border-radius: 8px;
+    cursor: pointer;
+
 }
 
 .secondary-button{
@@ -81,6 +83,8 @@
   border: none;
   border-radius: 8px;
   background-color: #FFF;
+  cursor: pointer;
+
 }
 
 .tertiary-button{
@@ -89,5 +93,6 @@
   border: none;
   background-color: #FFF;
   border: #FDA29B 1px solid;
+  cursor: pointer;
   border-radius:8px;
 }
