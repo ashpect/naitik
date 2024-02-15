@@ -13,9 +13,12 @@ const handleClick = async () => {
       let elements = document.getElementsByClassName('a-expander-content reviewText review-text-content a-expander-partial-collapse-content');
       for (let i = 0; i < elements.length; i++) {
         let review = elements[i].textContent;
+        // console.log(revi)
         let data = {
-          "review": review
+          "review": review?.toString().replace('\n', ''),
+          "accountURL":""
         }
+        console.log(JSON.stringify(data));
         try{
           const response = await fetch(apiUrl, {
             method: 'POST',
