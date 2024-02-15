@@ -1,6 +1,7 @@
 from amazon import amazon
 from flipkart import flip
 from flask import Flask, request, jsonify
+from dotenv import load_dotenv
 import sqlite3
 from flask_cors import CORS
 import os
@@ -11,6 +12,14 @@ import base64
 import datetime
 import json
 import time
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
+# Download the VADER lexicon if you haven't already
+nltk.download('vader_lexicon')
+
+# Initialize the sentiment analyzer
+sid = SentimentIntensityAnalyzer()
 
 con = sqlite3.connect("dark.db", check_same_thread=False)
 app = Flask(__name__)
@@ -73,7 +82,7 @@ except:
 
 
 @app.route('/search', methods=['POST'])
-def product():
+def postproduct():
     input_json = request.get_json(force=True) 
     prod = input_json["product"]
     ama_data = amazon(prod)
@@ -84,31 +93,31 @@ def product():
     }
     return jsonify(response_data)
 
-# @app.route('/search', methods=['GET'])
-# def product():
-#     cur.execute('''SELECT * FROM price where website_name="amazon"''')
-#     rows = cur.fetchall()
-#     result = []
-#     for row in rows:
-#         price = {
-#             'id': row[0],
-#             'date': row[2],
-#             'Price': row[3]
-#         }
-#         result.append(price)
-#     res={"amazon":result}
-#     cur.execute('''SELECT * FROM price where website_name="flipkart"''')
-#     rows = cur.fetchall()
-#     result = []
-#     for row in rows:
-#         price = {
-#             'id': row[0],
-#             'date': row[2],
-#             'Price': row[3]
-#         }
-#         result.append(price)
-#     res["flipkart"]=result
-#     return jsonify(res)
+@app.route('/search', methods=['GET'])
+def getproduct():
+    cur.execute('''SELECT * FROM price where website_name="amazon"''')
+    rows = cur.fetchall()
+    result = []
+    for row in rows:
+        price = {
+            'id': row[0],
+            'date': row[2],
+            'Price': row[3]
+        }
+        result.append(price)
+    res={"amazon":result}
+    cur.execute('''SELECT * FROM price where website_name="flipkart"''')
+    rows = cur.fetchall()
+    result = []
+    for row in rows:
+        price = {
+            'id': row[0],
+            'date': row[2],
+            'Price': row[3]
+        }
+        result.append(price)
+    res["flipkart"]=result
+    return jsonify(res)
 
 
 @app.route("/report", methods=["POST"])
@@ -192,7 +201,11 @@ def call_hugging_face_api(input_string):
 
     # Multi Class model api
     api_url = 'https://api-inference.huggingface.co/models/h4shk4t/darkpatternLLM-multiclass'
-    access_token = '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'
+    access_token = os.environ.get('ACCESS_TOKEN_BASIC')
+    # take the token from env file
+
+    # api_url = 'https://xolortql4954et50.us-east-1.aws.endpoints.huggingface.cloud'
+    # access_token = os.environ.get('ACCESS_TOKEN')
 
     headers = {
         'Content-Type': 'application/json',
@@ -200,8 +213,10 @@ def call_hugging_face_api(input_string):
     }
 
     input_data = {
-        'inputs': input_string
+        "inputs": input_string,
     }
+
+    print(input_data)
 
     response = requests.post(api_url, headers=headers, json=input_data)
     if not response.ok:
@@ -217,6 +232,14 @@ def handleapi_response(api_response):
     label = first_dictionary['label']
     score = first_dictionary['score']
 
+    if (label_mapping[label] == "Not Dark Pattern"):
+        return "NODP"
+    else:
+        return label_mapping[label]
+
+def handleapi_response_end(api_response):
+    label = api_response[0]['label']
+    score = api_response[0]['score']
     if (label_mapping[label] == "Not Dark Pattern"):
         return "NODP"
     else:
@@ -254,14 +277,19 @@ def checkdarkpattern():
             "root-1-1-1-3-1-2-0-0-3-2-6-3-4-3": " QUICK FINANCING APPLICATION: 0% APR available*",
             "root-1-1-1-3-1-2-0-0-3-2-6-3-4-4": " TRADE & VOLUME DISCOUNTS: ** Call or Chat for Details**",
             "root-1-1-1-3-1-2-0-0-3-2-6-3-4-2": " GUARANTEE: **We will BEAT OR MATCH any Price on This Unit!**",
+            "root-1-1-1-3-1-2-0-0-3-2-6-4": "82 Viewing This Product",
         }
         
         for key, value in input_json["data"].items():
+            print(value)
             # api_response = call_hosted_llm(value)
             api_response = call_hugging_face_api(value)
             # Testing purposes to not overload huggingface
             # api_response = [[{'label': 'LABEL_1', 'score': 0.9925353527069092}, {'label': 'LABEL_3', 'score': 0.0028718383982777596}, {'label': 'LABEL_4', 'score': 0.0011883211554959416}, {'label': 'LABEL_0', 'score': 0.0010276654502376914}, {'label': 'LABEL_5', 'score': 0.0007491591386497021}, {'label': 'LABEL_7', 'score': 0.0006587384850718081}, {'label': 'LABEL_6', 'score': 0.0005630258820019662}, {'label': 'LABEL_2', 'score': 0.0004058541962876916}]]
-            check = handleapi_response(api_response)
+            print(api_response)
+            # check = handleapi_response(api_response)
+            check = handleapi_response_end(api_response)
+            print(check)
             if check != "NODP":
                 result_list[key] = check
 
@@ -275,9 +303,11 @@ def checkdarkpattern():
             #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4-3": "Obstruction",
             #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4-4": "Obstruction",
             # } 
-            # time.sleep(0.5)
+            print("-------------next--------------")
         populateDbWithResult(result_list,input_json["website_url"])
+        write_dictionary_to_file(result_list,"/Users/ashishkumarsingh/Desktop/dark/naitik/scrapers/naitikfinal.txt")
         print(result_list)
+
         return jsonify(result_list)
 
     except Exception as e:
@@ -407,6 +437,32 @@ def monitor2():
         }
         result.append(pattern)
     return jsonify(result)
+
+@app.route('/getsentiment', methods=['POST'])
+def sentiment():
+    input_json = request.get_json(force=True) 
+    text = input_json["review"]
+    accountURL = input_json["accountURL"]
+    scores = sid.polarity_scores(text)
+    # Print sentiment scores
+    if (scores['compound'] >= 0.80):
+        scores['sentiment'] = 'Positive'
+        # reviews = getMoreReviews(accountURL)
+        example_reviews = ["I absolutely love my new smartphone! The camera quality is outstanding, capturing every moment with stunning clarity. The battery life lasts all day, even with heavy use, and the sleek design fits perfectly in my hand. The user interface is intuitive and responsive, making it a joy to use. Overall, I couldn't be happier with my purchase!","This fitness tracker has transformed my workouts! It accurately tracks my steps, heart rate, and calories burned, providing valuable insights into my daily activity levels. The sleek design is comfortable to wear all day, and the battery life lasts for days on end. The accompanying app is easy to navigate and offers personalized coaching tips to help me reach my fitness goals. I highly recommend this tracker to anyone looking to take their fitness journey to the next level!","I recently purchased this cookware set, and it has exceeded my expectations! The pots and pans heat up quickly and distribute heat evenly, resulting in perfectly cooked meals every time. The non-stick coating makes cleanup a breeze, and the durable construction ensures that these pans will last for years to come. Plus, the variety of sizes included in the set makes it versatile enough for any cooking task. I'm thrilled with my purchase and can't wait to try out more recipes!","I'm blown away by the performance of these wireless earbuds! The sound quality is exceptional, with crisp highs and deep bass that make my favorite songs come to life. The earbuds fit snugly in my ears and stay put during even the most intense workouts. The battery life is impressive, lasting for hours on a single charge, and the charging case is compact and convenient for on-the-go use. I highly recommend these earbuds to anyone in the market for a new pair!"]
+        reviews = example_reviews
+        results = {}
+        for review in reviews:
+            results[review] = sid.polarity_scores(review)['compound']
+        average = sum(results.values())/len(results)
+        if average > 0.9:
+            return jsonify({"average is": average, "conclusion": "likely that it is a fake review"})
+        return jsonify({"average is: ": average, "conclusion": "unlikely that it is a fake review"})
+    else:
+        return jsonify({"Single review score": scores['compound']})
+
+def getMoreReviews():
+    # Get more reviews from the website
+    pass
 
 if __name__ == '__main__':
     app.run()

@@ -1,9 +1,7 @@
 bs4
-selenium
-multiprocessing
-amazon 
-flipkart 
+selenium 
 flask 
-sqlite3
+# sqlite3
 flask_cors
-werkzeug.utils
+werkzeug
+nltk
