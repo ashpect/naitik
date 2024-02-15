@@ -67,7 +67,7 @@ const Bruh = () => {
             {patterns.map(pattern => (
               <Tr key={pattern.id}>
                 <Td>
-                  <Button style={{backgroundColor:"#53389E"}} onClick={() => getChartData(pattern.website_name)}>
+                  <Button style={{backgroundColor:"#53389E", color:"white"}} onClick={() => getChartData(pattern.website_name)}>
                     {pattern.website_name}
                   </Button>
                 </Td>

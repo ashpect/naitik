@@ -82,13 +82,10 @@ function Checkbox() {
                     }
                   }
               }
-                console.log("Kuch to chala hai");
             })
             .catch(error => {
               console.error('Error:', error.message);
             });
-
-            console.log("OHOOO BHAIYA");
 
             // ---- Helper Functions ----
             function traverseAndUpdate(element:any, parent:any, node:any) {

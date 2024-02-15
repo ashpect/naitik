@@ -122,17 +122,20 @@ def getproduct():
 
 @app.route("/report", methods=["POST"])
 def reportpattern():
-    if 'img' not in request.files:
-            return 'there is no file1 in form!'
-    file1 = request.files['img']
-    path = os.path.join("./images", ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))+".jpg")
-    file1.save(path)
-    website = request.form["website"]
-    tag = request.form["tag"]
-    htmlcontent = request.form["content"]
-    cur.execute('''INSERT INTO darkpatterns (website_name, img, htmlcontent, tag)
-                   VALUES (?, ?, ?,?)''', (website, path, htmlcontent, tag))
-    con.commit()
+
+    print(request.form)
+    print(request.get_json())
+    # if 'img' not in request.files:
+    #         return 'there is no file1 in form!'
+    # file1 = request.files['img']
+    # path = os.path.join("./images", ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))+".jpg")
+    # file1.save(path)
+    # website = request.form["website"]
+    # tag = request.form["tag"]
+    # htmlcontent = request.form["content"]
+    # cur.execute('''INSERT INTO darkpatterns (website_name, img, htmlcontent, tag)
+    #                VALUES (?, ?, ?,?)''', (website, path, htmlcontent, tag))
+    # con.commit()
     return "Thank you for reporting the dark pattern!"
 
 @app.route("/report", methods=["GET"])
@@ -201,11 +204,11 @@ def call_hugging_face_api(input_string):
 
     # Multi Class model api
     api_url = 'https://api-inference.huggingface.co/models/h4shk4t/darkpatternLLM-multiclass'
-    access_token = os.environ.get('ACCESS_TOKEN_BASIC')
+    access_token = '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'
     # take the token from env file
 
     # api_url = 'https://xolortql4954et50.us-east-1.aws.endpoints.huggingface.cloud'
-    # access_token = os.environ.get('ACCESS_TOKEN')
+    # access_token = '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'
 
     headers = {
         'Content-Type': 'application/json',
@@ -287,8 +290,8 @@ def checkdarkpattern():
             # Testing purposes to not overload huggingface
             # api_response = [[{'label': 'LABEL_1', 'score': 0.9925353527069092}, {'label': 'LABEL_3', 'score': 0.0028718383982777596}, {'label': 'LABEL_4', 'score': 0.0011883211554959416}, {'label': 'LABEL_0', 'score': 0.0010276654502376914}, {'label': 'LABEL_5', 'score': 0.0007491591386497021}, {'label': 'LABEL_7', 'score': 0.0006587384850718081}, {'label': 'LABEL_6', 'score': 0.0005630258820019662}, {'label': 'LABEL_2', 'score': 0.0004058541962876916}]]
             print(api_response)
-            # check = handleapi_response(api_response)
-            check = handleapi_response_end(api_response)
+            check = handleapi_response(api_response)
+            # check = handleapi_response_end(api_response)
             print(check)
             if check != "NODP":
                 result_list[key] = check
@@ -352,6 +355,7 @@ def cleanusingtries(A):
             B[l] = A[l]
 
     return B
+
 
 def populateDbWithResult(result_list,website_url):
 
@@ -437,6 +441,11 @@ def monitor2():
         }
         result.append(pattern)
     return jsonify(result)
+
+@app.route("/fakereview",methods=["POST"])
+def fakereview():
+    print(request.get_json())
+    return jsonify({"message": "Server is running"})
 
 @app.route('/getsentiment', methods=['POST'])
 def sentiment():

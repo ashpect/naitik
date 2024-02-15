@@ -4,10 +4,27 @@ import Dom from './components/Dom';
 import Checkprice from './components/CheckPrice';
 import logo from "./logo.png";
 import FakeRevew from './components/bruh';
+// import { useState } from 'react';
+// import DarkPatternSelector from './components/darkselector';
+
 function App() {
 
+  // const [showDropdown, setShowDropdown] = useState(false); // State variable for dropdown visibility
+  // const [selectedPattern, setSelectedPattern] = useState<string | null>(null); // State variable for selected dark pattern
+
+  // const handlePatternSelect = (pattern: string) => {
+  //   setSelectedPattern(pattern); // Update selected dark pattern
+  //   setShowDropdown(false); // Hide dropdown
+  //   // You can perform any further actions here, such as sending the selected pattern to a server
+  // };
+
   const handleClick = async () => {
+
+    // setShowDropdown(!showDropdown)
+    // chrome.storage.local.set({ "data": selectedPattern });
+    
     let [tab] = await chrome.tabs.query({ active : true });
+
     // giving generic params to executeScript for handling args
     chrome.scripting.executeScript({
       target: { tabId: tab.id! },
@@ -18,12 +35,53 @@ function App() {
               hoveredElement = event.target;
           });
 
-            document.addEventListener('click', function() {
+            document.addEventListener('click', async function() {
               if (hoveredElement) {
                 console.log(hoveredElement);
                 // You can display the element details in a popup or any other way you prefer
                 // For example, you can use the browser's console to log the element details
                 //add a popup hereh
+                //send a post request here to localhost with element details
+
+                const hoveredElementWithAttributes = hoveredElement as HTMLElement;
+
+                const attributes: { [key: string]: string } = {};
+                for (const { name, value } of hoveredElementWithAttributes.attributes) {
+                  attributes[name] = value;
+                }
+
+                // Construct object with element details including its attributes
+                const elementDetails = {
+                  tagName: hoveredElementWithAttributes.tagName,
+                  attributes: attributes,
+                  test: "hio",
+                  // darkpattern: setSelectedPattern,
+                };
+
+                const apiUrl = 'http://127.0.0.1:5000/report';
+                const requestOptions = {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(elementDetails)
+                };
+          
+                try {
+                  const response = await fetch(apiUrl, requestOptions);
+
+                  if (!response.ok) {
+                    throw new Error(`API request failed with status: ${response.status}`);
+                  }
+                  console.log(response.json());
+
+                } catch (error) {
+                  console.error('Error making API request:', error);
+                }
+
+                // Send message to background script to remove the content script
+                chrome.runtime.sendMessage({ removeScript: true });
+
                 alert("You have reported the element. Thank you for your contribution.");
               }
             });
@@ -73,6 +131,10 @@ function App() {
 <div style={{color:'black',flexDirection:"row",justifyContent:"space-between", display:"flex",alignItems:"center"}} >
       <b>Detected something unusual? </b>
       <button className='tertiary-button' onClick={handleClick}>Report</button>
+      {/* {showDropdown && ( // Render dropdown only when showDropdown is true
+        <DarkPatternSelector onSelect={handlePatternSelect} />
+      )}
+      {selectedPattern && <p>Selected Dark Pattern: {selectedPattern}</p>} */}
     </div>
     </div>
   );

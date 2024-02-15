@@ -77,7 +77,7 @@ const DarkPatternsList = () => {
       <Tbody>
         {patterns.map(pattern => (
           <Tr key={pattern.id } style={{ borderBottom: '1px solid #ddd' }}>
-            <Td><a href={pattern.website_name} style={{ textDecoration: 'underline' }}>{pattern.website_name}</a></Td>
+            <Td><a href={pattern.website_name} style={{ textDecoration: 'underline', color:"white" }}>{pattern.website_name}</a></Td>
             <Td>
               <Image src={`data:image/jpg;base64,${pattern.img}`} alt={pattern.website_name} maxH="100px" />
             </Td>
@@ -95,7 +95,7 @@ const DarkPatternsList = () => {
             </Td>
             <Td>{pattern.htmlcontent}</Td>
             <Td>
-              <Button onClick={() => handleApprove(pattern.id, pattern.website_name, pattern.img, pattern.htmlcontent, pattern.tag)} colorScheme="teal" size="sm">Submit</Button>
+              <Button onClick={() => handleApprove(pattern.id, pattern.website_name, pattern.img, pattern.htmlcontent, pattern.tag)} colorScheme="purple" size="sm">Submit</Button>
             </Td>
           </Tr>
         ))}
