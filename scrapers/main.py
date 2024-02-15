@@ -438,7 +438,7 @@ def sentiment():
     else:
         return jsonify({"Single review score": scores['compound']})
 
-def getMoreReviews():
+def getMoreReviews(url):
     # Get more reviews from the website
     pass
 

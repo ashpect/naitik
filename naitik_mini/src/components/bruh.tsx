@@ -1,74 +1,44 @@
-import { useState, FormEvent, ChangeEvent } from 'react';
+import tag from "../Tag.png"
+import Card from "./card";
 
-interface FormData {
-  review: string;
-  url: string;
-}
+const handleClick = () => async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  chrome.scripting.executeScript({
+    target: { tabId: tab.id!},
+    func: async () => {
+      const apiUrl = 'http://127.0.0.1:5000/getsentiment';
 
-function FormSubmitComponent() {
-  const [formData, setFormData] = useState<FormData>({
-    review: '',
-    url: ''
-  });
-
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const apiUrl = 'http://127.0.0.1:3000/getsentiment';
-
-    try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (!response.ok) {
-        throw new Error(`API request failed with status: ${response.status}`);
+      let elements = document.getElementsByClassName('a-expander-content reviewText review-text-content a-expander-partial-collapse-content');
+      for (let i = 0; i < elements.length; i++) {
+        let review = elements[i].textContent;
+        let data = {
+          "review": review
+        }
+        try{
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+          const responseData = await response.json();
+          console.log(responseData);
+        }
+        catch (error) {
+          console.error('Failed to fetch data:', error);
+        }
       }
-
-      const responseData = await response.json();
-      console.log(responseData);
-    } catch (error) {
-      console.error('Failed to submit form data:', error);
     }
-  };
+  })
+};
 
+function FakeRevew() {
   return (
-    <div>
-      <h2>Submit Form Data</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="review">Product Review:</label>
-          <input
-            type="text"
-            id="review"
-            name="review"
-            value={formData.review}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div>
-          <label htmlFor="url">URL of Account:</label>
-          <input
-            type="text"
-            id="url"
-            name="url"
-            value={formData.url}
-            onChange={handleInputChange}
-          />
-        </div>
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+    <>
+      <Card heading="Fake Reviews Alert" primaryButton="Clear all fake reviews" secondaryButton="Summarize reviews" content="We have detected fake reviews on this page." imageSrc={tag} onPrimaryButtonClick={handleClick}></Card>
+    </>
   );
 }
 
-export default FormSubmitComponent;
+export default FakeRevew;
