@@ -17,9 +17,10 @@ admin/coverage
 admin/build
 
 scrapers/__pycache__
-scrapers/dark.db
+
 scrapers/naitikdata.txt
 scrapers/z.txt
+scrapers/.env
 
 
 # Editor directories and files

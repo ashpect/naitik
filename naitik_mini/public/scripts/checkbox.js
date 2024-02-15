@@ -7,4 +7,4 @@ let allInputs = document.getElementsByTagName("input");
          }
          }
      }
- alert("Unchecked " + allInputs.length + "boxes , which were a potential to be misled to be used.");
+ alert("Unchecked " + allInputs.length + " boxes, which were a potential to be misled to be used.");
