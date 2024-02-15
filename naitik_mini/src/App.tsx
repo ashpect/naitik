@@ -4,6 +4,7 @@ import Dom from './components/Dom';
 import Checkprice from './components/CheckPrice';
 import logo from "./logo.png";
 import FakeRevew from './components/bruh';
+import Scrapper from './components/scrap';
 function App() {
 
   const handleClick = async () => {
@@ -64,6 +65,7 @@ function App() {
       <Checkbox />
       <Dom/>
       <FakeRevew/>
+      <Scrapper/>
     </div>
 
     <p className="read-the-docs">

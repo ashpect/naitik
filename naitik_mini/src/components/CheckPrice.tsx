@@ -15,23 +15,38 @@ interface ChartData {
 
 function CheckPrice() {
   function generateFakeData(): ChartData {
-    const flipkartData: PriceData[] = [];
-    const amazonData: PriceData[] = [];
-    const startDate = new Date(2024, 0, 1); // Start from January 1, 2024
-    const endDate = new Date(2024, 11, 31); // End on December 31, 2024
-    const dateRange = endDate.getTime() - startDate.getTime(); // Get the range of dates in milliseconds
   
-    for (let i = 0; i < 100; i++) {
-      const randomDate = new Date(startDate.getTime() + Math.random() * dateRange);
-      const dateString = randomDate.toISOString().slice(0, 10);
-      const flipkartPrice = Math.floor(Math.random() * 100) + 50; // Random price between 50 and 149
-      const amazonPrice = Math.floor(Math.random() * 100) + 100; // Random price between 100 and 199
+    return {
+      "flipkart": [
+          {"price": 71999, "date": "03-23-2023"},
+          {"price": 71999, "date": "04-24-2023"},
+          {"price": 79990, "date": "05-10-2023"},
+          {"price": 67999, "date": "06-08-2023"},
+          {"price": 70999, "date": "07-06-2023"},
+          {"price": 79990, "date": "08-09-2023"},
+          {"price": 67999, "date": "09-08-2023"},
+          {"price": 56999, "date": "10-07-2023"},
+          {"price": 61999, "date": "11-16-2023"},
+          {"price": 61999, "date": "12-16-2023"},
+          {"price": 69999, "date": "01-12-2024"},
+          {"price": 54999, "date": "02-13-2024"}
+      ],
+      "amazon": [
+          {"price": 90999, "date": "03-23-2023"},
+          {"price": 71999, "date": "04-24-2023"},
+          {"price": 69900, "date": "05-10-2023"},
+          {"price": 68999, "date": "06-08-2023"},
+          {"price": 69999, "date": "07-06-2023"},
+          {"price": 69990, "date": "08-09-2023"},
+          {"price": 63999, "date": "09-08-2023"},
+          {"price": 74990, "date": "10-07-2023"},
+          {"price": 72999, "date": "11-16-2023"},
+          {"price": 72999, "date": "12-16-2023"},
+          {"price": 72999, "date": "01-12-2024"},
+          {"price": 56999, "date": "02-13-2024"}
+      ]
+  }
   
-      flipkartData.push({ date: dateString, price: flipkartPrice });
-      amazonData.push({ date: dateString, price: amazonPrice });
-    }
-  
-    return { flipkart: flipkartData, amazon: amazonData };
   }
   
   const [chartData, setChartData] = useState<ChartData | null>(null);
@@ -134,6 +149,7 @@ function CheckPrice() {
       <>
         {chartData ? (
           <div className="card">
+            <h1>1 Year tracking of IPhone 14 (Midnight, 128GB)</h1>
             <canvas id="lineChart"></canvas>
             <button className="secondary-button" onClick={closeAnalysis} style={{cursor:"pointer"}}>Close Analysis</button>
           </div>
