@@ -1,0 +1,189 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "Dark Pattern Detection API",
+      "description": "API for detecting dark patterns on websites"
+    },
+    "host": "localhost:5000",
+    "basePath": "/",
+    "schemes": [
+      "http"
+    ],
+    "paths": {
+      "/search": {
+        "post": {
+          "summary": "Search for a product",
+          "description": "Search for a product on Amazon and Flipkart",
+          "parameters": [
+            {
+              "name": "url",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful operation"
+            }
+          }
+        },
+        "get": {
+          "summary": "Get product details",
+          "description": "Get product details from Amazon and Flipkart",
+          "responses": {
+            "200": {
+              "description": "Successful operation"
+            }
+          }
+        }
+      },
+      "/report": {
+        "post": {
+          "summary": "Report a dark pattern",
+          "description": "Report a dark pattern found on a website",
+          "parameters": [
+            {
+              "name": "website",
+              "in": "formData",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "tag",
+              "in": "formData",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "content",
+              "in": "formData",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "img",
+              "in": "formData",
+              "required": true,
+              "type": "file"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful operation"
+            }
+          }
+        },
+        "get": {
+          "summary": "Get reported dark patterns",
+          "description": "Get all reported dark patterns",
+          "responses": {
+            "200": {
+              "description": "Successful operation"
+            }
+          }
+        }
+      },
+      "/checkdarkpattern": {
+        "post": {
+          "summary": "Check for dark patterns",
+          "description": "Check a website for dark patterns",
+          "parameters": [
+            {
+              "name": "data",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "review": {
+                    "type": "object"
+                  },
+                  "accountURL": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful operation"
+            }
+          }
+        }
+      },
+      "/monitor": {
+        "get": {
+          "summary": "Monitor dark patterns",
+          "description": "Get all monitored dark patterns",
+          "responses": {
+            "200": {
+              "description": "Successful operation"
+            }
+          }
+        },
+        "post": {
+          "summary": "Monitor a specific website",
+          "description": "Get all monitored dark patterns for a specific website",
+          "parameters": [
+            {
+              "name": "website_name",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "website_name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful operation"
+            }
+          }
+        }
+      },
+      "/getsentiment": {
+        "post": {
+          "summary": "Get sentiment of a review",
+          "description": "Get the sentiment of a review and check if it's likely to be a fake review",
+          "parameters": [
+            {
+              "name": "review",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "review": {
+                    "type": "string"
+                  },
+                  "accountURL": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful operation"
+            }
+          }
+        }
+      }
+    }
+  }
