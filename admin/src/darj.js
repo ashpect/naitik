@@ -69,6 +69,7 @@ const DarkPatternsList = () => {
       <Thead>
       <Tr style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Website Name</Th>
           <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Website Image</Th>
+          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Reported Tag</Th>
           <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Tag</Th>
           <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>HTML Content</Th>
           <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Actions</Th>
@@ -81,6 +82,7 @@ const DarkPatternsList = () => {
             <Td>
               <Image src={`data:image/jpg;base64,${pattern.img}`} alt={pattern.website_name} maxH="100px" />
             </Td>
+            <Td>{pattern.tag}</Td>
             <Td>
               <Select value={pattern.tag} onChange={(e) => handleChange(pattern.id, e.target.value)}>
                 <option value="Forced Action">Forced Action</option>
