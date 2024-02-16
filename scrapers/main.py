@@ -457,6 +457,7 @@ def fakereview():
 
 @app.route('/getsentiment', methods=['POST'])
 def sentiment():
+    print("----Fake review detection started-----")
     input_json = request.get_json(force=True) 
     text = input_json["review"]
     print("text is: ", text)
@@ -464,7 +465,7 @@ def sentiment():
     scores = sid.polarity_scores(text)
     print("Scores: ", scores)
     # Print sentiment scores
-    # print("User analysis of: ", accountURL, "original review score: ", scores['compound'])
+    print("User analysis of: ", accountURL, "original review score: ", scores['compound'])
     if (scores['compound'] >= 0.80):
         scores['sentiment'] = 'Positive'
         reviews = getAccountReviews(accountURL)

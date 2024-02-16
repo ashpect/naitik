@@ -5,6 +5,7 @@ import json
 def flip(prod):
     prod=prod.replace(" ","%20")
     chrome_options = Options()
+    chrome_options.add_argument("--headless")
     driver = webdriver.Chrome(options=chrome_options)
     driver.get(f'https://www.flipkart.com/search?q={prod}&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=on&as=off')
     html_content = driver.page_source

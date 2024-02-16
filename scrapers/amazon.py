@@ -7,10 +7,14 @@ from multiprocessing import Pool
 import time
 
 def amazon(prod):
-    prod.replace(" ","+")
+    prod = prod.replace(" ","+")
     chrome_options = Options()
+    # chrome_options.add_argument("--headless")
     driver = webdriver.Chrome(options=chrome_options)
     driver.get(f'https://www.amazon.in/s?k={prod}')
+    driver.refresh()
+    time.sleep(1)
+    driver.refresh()
     html_content = driver.page_source
     amazon_results = BeautifulSoup(html_content, 'html5lib').find_all('div', class_='s-main-slot s-result-list s-search-results sg-row')[0].find_all('div')
     data_list = []
@@ -34,6 +38,7 @@ def amazon(prod):
     
 def getAccountReviews(url):
     chrome_options = Options()
+    # chrome_options.add_argument("--headless")
     driver = webdriver.Chrome(options=chrome_options)
     driver.get(url)
     driver.refresh()
@@ -41,6 +46,7 @@ def getAccountReviews(url):
     # driver.get(url)
     html_content = driver.page_source
     amazon_results = BeautifulSoup(html_content, 'html5lib').find_all('div', class_='your-content-tab-container')
+    if(amazon_results==[]): return ["This product is nice!"]
     results = amazon_results[0].find_all('span')
     reviews = []
     for result in results:

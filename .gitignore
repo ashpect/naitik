@@ -33,3 +33,4 @@ scrapers/.env
 *.njsproj
 *.sln
 *.sw?
+dark.db
