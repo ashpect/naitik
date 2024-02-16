@@ -47,7 +47,7 @@ def getAccountReviews(url):
         # driver.get(url)
         html_content = driver.page_source
         amazon_results = BeautifulSoup(html_content, 'html5lib').find_all('div', class_='your-content-tab-container')
-    if(amazon_results==[]): return ["This product is nice!"]
+        if(amazon_results==[]): return []
         results = amazon_results[0].find_all('span')
         reviews = []
         for result in results:
