@@ -40,19 +40,23 @@ def getAccountReviews(url):
     chrome_options = Options()
     # chrome_options.add_argument("--headless")
     driver = webdriver.Chrome(options=chrome_options)
-    driver.get(url)
-    driver.refresh()
-    # driver.find_element(By.CLASS_NAME, "a-profile-content").click()
-    # driver.get(url)
-    html_content = driver.page_source
-    amazon_results = BeautifulSoup(html_content, 'html5lib').find_all('div', class_='your-content-tab-container')
+    try:
+        driver.get(url)
+        driver.refresh()
+        # driver.find_element(By.CLASS_NAME, "a-profile-content").click()
+        # driver.get(url)
+        html_content = driver.page_source
+        amazon_results = BeautifulSoup(html_content, 'html5lib').find_all('div', class_='your-content-tab-container')
     if(amazon_results==[]): return ["This product is nice!"]
-    results = amazon_results[0].find_all('span')
-    reviews = []
-    for result in results:
-        if len(result.text) > 19:
-            print(result.text)
-            reviews.append(result.text)
-    return reviews
+        results = amazon_results[0].find_all('span')
+        reviews = []
+        for result in results:
+            if len(result.text) > 19:
+                print(result.text)
+                reviews.append(result.text)
+        return reviews
+    except Exception as e:
+        print(e)
+        return []
 
 # getAccountReviews("https://www.amazon.in/gp/profile/amzn1.account.AHSESHGFL2RCGJYQNMMQX4XX6BCA/")
