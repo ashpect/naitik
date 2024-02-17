@@ -13,6 +13,7 @@ import datetime
 import json
 import time
 import nltk
+import re
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from urllib.parse import urlparse
 
@@ -131,19 +132,29 @@ def getproduct():
 @app.route("/report", methods=["POST"])
 def reportpattern():
 
-    print(request.form)
     print(request.get_json())
-    # if 'img' not in request.files:
-    #         return 'there is no file1 in form!'
-    # file1 = request.files['img']
-    # path = os.path.join("./images", ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))+".jpg")
-    # file1.save(path)
-    # website = request.form["website"]
-    # tag = request.form["tag"]
-    # htmlcontent = request.form["content"]
-    # cur.execute('''INSERT INTO darkpatterns (website_name, img, htmlcontent, tag)
-    #                VALUES (?, ?, ?,?)''', (website, path, htmlcontent, tag))
-    # con.commit()
+    print("isdbfisdfisofsidbfisdf")
+    if 'img' in request.files:
+        print("----test1----")
+        file1 = request.files['img']
+        path = os.path.join("./images", ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))+".jpg")
+        file1.save(path)
+    else:
+        path = ""
+    print("----test2----")
+    website = request.get_json()["url"]
+
+    #apply regex
+    pattern = r'https?://([^/]+)'
+    match = re.search(pattern, website)
+    if match:
+        website = match.group(1)
+ 
+    tag = request.get_json()["darkpattern"]
+    htmlcontent = request.get_json()["text"]
+    cur.execute('''INSERT INTO darkpatterns (website_name, img, htmlcontent, tag)
+                   VALUES (?, ?, ?,?)''', (website, path, htmlcontent, tag))
+    con.commit()
     return "Thank you for reporting the dark pattern!"
 
 @app.route("/report", methods=["GET"])
@@ -152,13 +163,19 @@ def getpattern():
         cur.execute('''SELECT * FROM darkpatterns''')
         rows = cur.fetchall()
         result = []
+
+        with open(rows[0][2], "rb") as image_file:
+            print(rows[0][2])
+            base_encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
+
         for row in rows:
-            with open(row[2], "rb") as image_file:
-                encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
+            # with open(row[2], "rb") as image_file:
+            #     print(row[2])
+            #     encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
             pattern = {
                 'id': row[0],
                 'website_name': row[1],
-                'img': encoded_image,
+                'img': base_encoded_image,
                 'htmlcontent': row[3],
                 'tag': row[4]
             }
@@ -315,6 +332,8 @@ def checkdarkpattern():
             #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4-4": "Obstruction",
             # } 
             print("-------------next--------------")
+        # wesbite_url = input_json["website_url"]
+        
         populateDbWithResult(result_list,input_json["website_url"])
         write_dictionary_to_file(result_list,"/Users/ashishkumarsingh/Desktop/dark/naitik/scrapers/naitikfinal.txt")
         print(result_list)

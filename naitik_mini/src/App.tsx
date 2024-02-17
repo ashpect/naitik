@@ -57,12 +57,17 @@ function App() {
                   attributes[name] = value;
                 }
 
+                const textWithinElement = hoveredElementWithAttributes.innerText;
+                console.log("Text within the element:", textWithinElement);
+
                 // Construct object with element details including its attributes
                 const elementDetails = {
                   tagName: hoveredElementWithAttributes.tagName,
                   attributes: attributes,
                   test: "hio",
                   darkpattern: selectedPattern,
+                  text: textWithinElement,
+                  url: window.location.href,
                 };
 
                 const apiUrl = 'http://127.0.0.1:5000/report';
