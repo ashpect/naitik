@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {VStack, Table, Thead, Tbody, Tr, Th, Td, Button, Image, Select } from '@chakra-ui/react';
-import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS } from "chart.js/auto";
+import {Table, Thead, Tbody, Tr, Th, Td, Button, Image, Select,HStack } from '@chakra-ui/react';
 import Navbar from './navbar';
 
 const DarkPatternsList = () => {
@@ -44,25 +42,8 @@ const DarkPatternsList = () => {
     return acc;
   }, {});
 
-  const chartData = {
-    labels: Object.keys(occurrences),
-    datasets: [
-      {
-        label: 'Occurrences',
-        backgroundColor: 'rgba(63,56,158,0.4)',
-        borderColor: 'rgba(63,56,158,1)',
-        borderWidth: 1,
-        hoverBackgroundColor: 'rgba(63,56,158,0.6)',
-        hoverBorderColor: 'rgba(63,56,158,1)',
-        data: Object.values(occurrences),
-        barPercentage: 0.8, // Adjust this value to control the width of the bars
-        categoryPercentage: 0.8, // Adjust this value to control the width of the bars
-      },
-    ],
-  };
-
   return (
-    <VStack spacing={4} align="stretch">
+    <HStack spacing={4} align="stretch">
       <Navbar/>
     <div style={{ margin: '4rem auto', width: '80%' }}>
     <Table variant="simple">
@@ -104,12 +85,7 @@ const DarkPatternsList = () => {
       </Tbody>
     </Table>
     </div>
-    <div style={{margin:"4rem", height:"70vh"}}>
-    <Bar
-        data={chartData}
-      />
-    </div>
-    </VStack>
+    </HStack>
 
   );
 };

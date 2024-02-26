@@ -4,12 +4,12 @@ import {
   Box,
   theme,
 } from '@chakra-ui/react';
-import DarkPatternsList from './darj';
+import DarkPatternsList from './report';
 
 function Review() {
   return (
     <ChakraProvider theme={theme}>
-      <Box textAlign="center" fontSize="xl">
+      <Box  fontFamily={'Nunito Sans'} textAlign="center" fontSize="xl">
           <DarkPatternsList/>
       </Box>
     </ChakraProvider>

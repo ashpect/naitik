@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {VStack, Table, Thead, Tbody, Tr, Th, Td, Button, Image, Select } from '@chakra-ui/react';
+import {HStack, Table, Thead, Tbody, Tr, Th, Td, Button, Image, Select } from '@chakra-ui/react';
 import { Line } from "react-chartjs-2";
 import { Chart as ChartJS } from "chart.js/auto";
 import Navbar from './navbar';
@@ -34,7 +34,7 @@ const Bruh = () => {
     let dates = chartData.map(entry => entry.date)
 }
   return (
-    <VStack spacing={4} align="stretch">
+    <HStack spacing={4} align="stretch">
       <Navbar/>
       {chartData && (
         <div style={{height:"40rem", margin:"4rem",display:"flex",alignItems:"center", justifyContent:"center"}}>
@@ -84,7 +84,7 @@ const Bruh = () => {
     </Table>
     </div>
 
-    </VStack>
+    </HStack>
 
   );
 };

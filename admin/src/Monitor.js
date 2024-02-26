@@ -4,11 +4,11 @@ import {
   Box,
   theme,
 } from '@chakra-ui/react';
-import Bruh from './bruh';
+import Bruh from './mon';
 function Monitor() {
   return (
     <ChakraProvider theme={theme}>
-      <Box textAlign="center" fontSize="xl">
+      <Box fontFamily={'Nunito Sans'} textAlign="center" fontSize="xl">
           <Bruh/>
       </Box>
     </ChakraProvider>
