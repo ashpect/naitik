@@ -1,10 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {Table, Thead, Tbody, Tr, Th, Td, Button, Image, Select,HStack } from '@chakra-ui/react';
+import { Table, Thead, Tbody, Tr, Th, Td, Button, VStack, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Select } from '@chakra-ui/react';
 import Navbar from './navbar';
 
 const DarkPatternsList = () => {
   const [patterns, setPatterns] = useState([]);
+  const [selectedPattern, setSelectedPattern] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAction, setSelectedAction] = useState('');
+  
+  const primaryButton = {
+    backgroundColor:"rgba(0,182,155,0.2)",
+    color:"#00B69B",
+    padding:"0.5rem",
+    borderRadius:"8px",
+    marginRight:"8rem"
+  }
+  const secondaryButton = {
+    backgroundColor:"rgba(239,56,38,0.2)",
+    color:"#EF3826",
+    padding:"0.5rem",
+    borderRadius:"8px"
+  } 
+
   useEffect(() => {
     axios.get('http://localhost:5000/report')
       .then(response => {
@@ -14,22 +32,12 @@ const DarkPatternsList = () => {
         console.error('Error fetching data:', error);
       });
   }, []); 
+
   const handleApprove = (id, website_name, img, htmlcontent, tag) => {
-    axios.post('http://localhost:5000/approve', { id, website_name, img, htmlcontent, tag })
-      .then(response => {
-        console.log('Approval successful:', response.data);
-        axios.get('http://localhost:5000/report')
-          .then(response => {
-            setPatterns(response.data);
-          })
-          .catch(error => {
-            console.error('Error fetching data after approval:', error);
-          });
-      })
-      .catch(error => {
-        console.error('Error approving pattern:', error);
-      });
+    setSelectedPattern({ id, website_name, img, htmlcontent, tag });
+    setIsModalOpen(true);
   };
+
   const handleChange = (id, selectedTag) => {
     setPatterns(prevPatterns =>
       prevPatterns.map(pattern =>
@@ -37,57 +45,77 @@ const DarkPatternsList = () => {
       )
     );
   };
-  const websiteNames = patterns.map(pattern => pattern.website_name);  const occurrences = websiteNames.reduce((acc, website) => {
-    acc[website] = (acc[website] || 0) + 1;
-    return acc;
-  }, {});
+
+  const handleAction = (approve) => {
+    if (selectedPattern) {
+      axios.post('http://localhost:5000/approve', {
+        id: selectedPattern.id,
+        website: selectedPattern.website_name,
+        img: selectedPattern.img,
+        htmlcontent: selectedPattern.htmlcontent,
+        tag: selectedPattern.tag,
+        approve: approve
+      })
+      .then(response => {
+        console.log(`Pattern ${selectedPattern.id} ${selectedAction}`);
+        setIsModalOpen(false);
+        setSelectedPattern(null);
+        setSelectedAction('');
+      })
+      .catch(error => {
+        console.error('Error handling action:', error);
+      });
+    }
+  };
 
   return (
-    <HStack spacing={4} align="stretch">
+    <VStack spacing={4} align="stretch">
       <Navbar/>
-    <div style={{ margin: '4rem auto', width: '80%' }}>
-    <Table variant="simple">
-      <Thead>
-      <Tr style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Website Name</Th>
-          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Website Image</Th>
-          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Reported Tag</Th>
-          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Tag</Th>
-          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>HTML Content</Th>
-          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Actions</Th>
-        </Tr>
-      </Thead>
-      <Tbody>
-        {patterns.map(pattern => (
-          <Tr key={pattern.id } style={{ borderBottom: '1px solid #ddd' }}>
-            <Td><a href={pattern.website_name} style={{ textDecoration: 'underline', color:"white" }}>{pattern.website_name}</a></Td>
-            <Td>
-              <Image src={`data:image/jpg;base64,${pattern.img}`} alt={pattern.website_name} maxH="100px" />
-            </Td>
-            <Td>{pattern.tag}</Td>
-            <Td>
-              <Select value={pattern.tag} onChange={(e) => handleChange(pattern.id, e.target.value)}>
-                <option value="Forced Action">Forced Action</option>
-                <option value="Misdirection">Misdirection</option>
-                <option value="Not Dark Pattern">Not Dark Pattern</option>
-                <option value="Obstruction">Obstruction</option>
-                <option value="Scarcity">Scarcity</option>
-                <option value="Sneaking">Sneaking</option>
-                <option value="Social Proof">Social Proof</option>
-                <option value="Urgency">Urgency</option>
-              </Select>
-            </Td>
-            <Td>{pattern.htmlcontent}</Td>
-            <Td>
-              <Button onClick={() => handleApprove(pattern.id, pattern.website_name, pattern.img, pattern.htmlcontent, pattern.tag)} colorScheme="purple" size="sm">Submit</Button>
-            </Td>
-          </Tr>
-        ))}
-      </Tbody>
-    </Table>
-    </div>
-    </HStack>
-
+      <div style={{ textAlign: 'left', color: '#000', fontSize: '1.5rem', fontWeight: 'bold', alignSelf: 'left', marginLeft: "4rem", marginTop: "2rem" }}>Reported Patterns</div>
+      <div style={{ margin: '4rem auto', width: '80%' }}>
+        <Table variant="simple">
+          <Thead>
+            <Tr style={{ important: 'true' }}>   
+              <Th style={{ color:"#000000", important: 'true' }}>ID</Th>
+              <Th style={{ color:"#000000", important: 'true' }}>Webpage</Th>
+              <Th style={{ color:"#000000", important: 'true' }}>Description</Th>
+              <Th style={{ color:"#000000", important: 'true' }}>Date</Th>
+              <Th style={{ color:"#000000", important: 'true' }}>Type</Th>
+              <Th style={{ color:"#000000", important: 'true' }}>Status</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {patterns.map(pattern => (
+              <Tr key={pattern.id} style={{ borderBottom: '1px solid #ddd' }}>
+                <Td> {pattern.id}</Td>
+                <Td><a href={pattern.website_name} style={{ textDecoration: 'underline', color:"black" }}>{pattern.website_name}</a></Td>
+                <Td>{pattern.htmlcontent}</Td>
+                <Td>{pattern.date}</Td>
+                <Td>{pattern.tag}</Td>
+                <Td>
+                  <Button style={{ backgroundColor:"rgba(98,38,239,0.2)", color:"#6226EF" }} onClick={() => handleApprove(pattern.id, pattern.website_name, pattern.img, pattern.htmlcontent, pattern.tag)} colorScheme="purple" size="sm">Resolve</Button>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </div>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Approve or Reject</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            Is the dark pattern being reported a valid dark pattern?
+            <div style={{ textAlign: 'center', marginTop:"2rem" }}>
+              <button style={primaryButton} onClick={() => { handleAction(true) }}>Approve</button>
+              <button style={secondaryButton} onClick={() => { handleAction(false) }}>Reject</button>
+            </div>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </VStack>
   );
 };
 
-export default DarkPatternsList
+export default DarkPatternsList;

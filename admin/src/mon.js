@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {HStack, Table, Thead, Tbody, Tr, Th, Td, Button, Image, Select } from '@chakra-ui/react';
-import { Line } from "react-chartjs-2";
-import { Chart as ChartJS } from "chart.js/auto";
 import Navbar from './navbar';
 
 const Bruh = () => {
   const [patterns, setPatterns] = useState([]);
-  const [chartData, setChartData] = useState(null);
  useEffect(() => {
     axios.get('http://localhost:5000/monitor')
       .then(response => {
@@ -18,37 +15,9 @@ const Bruh = () => {
       });
   }, []); 
 
-  const getChartData = (website_name) => {
-    axios.post('http://localhost:5000/monitor', {website_name})
-      .then(response => {
-        const chartDataWithoutId = response.data.map(({ id, ...rest }) => rest);
-        setChartData(chartDataWithoutId);
-        console.log(chartData)
-      })
-      .catch(error => {
-        console.error('Error fetching chart data:', error);
-      });
-  };
-
-  if(chartData){
-    let dates = chartData.map(entry => entry.date)
-}
   return (
     <HStack spacing={4} align="stretch">
       <Navbar/>
-      {chartData && (
-        <div style={{height:"40rem", margin:"4rem",display:"flex",alignItems:"center", justifyContent:"center"}}>
-   <Line
-   data={{
-     labels: chartData.map(entry => entry.date),
-     datasets: Object.keys(chartData[0]).filter(key => key !== 'date').map(category => ({
-       label: category,
-       data: chartData.map(entry => entry[category]),
-     })),
-   }}
- />
- </div>
-    )}
     <div style={{ margin: '4rem auto', width: '80%' }}>
     <Table variant="simple">
       <Thead>
@@ -67,7 +36,7 @@ const Bruh = () => {
             {patterns.map(pattern => (
               <Tr key={pattern.id}>
                 <Td>
-                  <Button style={{backgroundColor:"#53389E", color:"white"}} onClick={() => getChartData(pattern.website_name)}>
+                  <Button style={{backgroundColor:"#53389E", color:"white"}} >
                     {pattern.website_name}
                   </Button>
                 </Td>

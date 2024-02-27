@@ -37,7 +37,8 @@ try:
         img VARCHAR(200),
         htmlcontent varchar(200),
         tag VARCHAR(75),
-        vector VARCHAR(200)
+        vector VARCHAR(200),
+        date Date,
     );''')
 except:
      print("table exists, continuing")
@@ -169,8 +170,8 @@ def reportpattern():
     response = requests.post("http://localhost:8000/vectors",json={"text":htmlcontent})
     vector = response.json().get("vector")
     vector_str = ','.join(map(str, vector))
-    cur.execute('''INSERT INTO darkpatterns (website_name, img, htmlcontent, tag, vector)
-                   VALUES (?, ?, ?,?, ?)''', (website, path, htmlcontent, tag, vector_str))
+    cur.execute('''INSERT INTO darkpatterns (website_name, img, htmlcontent, tag, vector,date)
+                   VALUES (?, ?, ?,?, ?)''', (website, path, htmlcontent, tag, vector_str, datetime.datetime.now().strftime('%Y-%m-%d')))
     con.commit()
     return "Thank you for reporting the dark pattern!"
 
@@ -194,7 +195,8 @@ def getpattern():
                 'website_name': row[1],
                 'img': base_encoded_image,
                 'htmlcontent': row[3],
-                'tag': row[4]
+                'tag': row[4],
+                "date":row[5]
             }
             result.append(pattern)
         return jsonify(result)
@@ -205,10 +207,10 @@ def getpattern():
 def approval():
     id = request.form.get("id")
     cur.execute('''DELETE FROM darkpatterns WHERE id = ?''', (id,))
-    website_name, img, htmlcontent, tag = request.form.get("website"),request.form.get("img"),request.form.get("htmlcontent"),request.form.get("tag")
-    cur.execute('''INSERT INTO trainingdata (website_name, img, htmlcontent, tag)
-                        VALUES (?, ?, ?, ?)''', (website_name, img, htmlcontent, tag))
-
+    if(request.form.get("approve")):
+        website_name, img, htmlcontent, tag = request.form.get("website"),request.form.get("img"),request.form.get("htmlcontent"),request.form.get("tag")
+        cur.execute('''INSERT INTO trainingdata (website_name, img, htmlcontent, tag)
+                            VALUES (?, ?, ?, ?)''', (website_name, img, htmlcontent, tag))
     con.commit()
     return "Done"
 
