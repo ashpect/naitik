@@ -69,7 +69,7 @@ const handleClick = async () => {
 function FakeRevew() {
   return (
     <>
-      <Card heading="Fake Reviews Alertotential to be misled to be used." primaryButton="Mark all fake reviews" secondaryButton="Summarize reviews" content="We have detected fake reviews on this page." imageSrc={tag} onPrimaryButtonClick={handleClick} onSecondaryButtonClick={lmao}></Card>
+      <Card heading="Fake Reviews Alert: potential to be misled." primaryButton="Mark all fake reviews" secondaryButton="Summarize reviews" content="We have detected fake reviews on this page." imageSrc={tag} onPrimaryButtonClick={handleClick} onSecondaryButtonClick={lmao}></Card>
     </>
   );
 }
