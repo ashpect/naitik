@@ -16,6 +16,9 @@ import nltk
 import re
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from urllib.parse import urlparse
+from io import BytesIO
+from PIL import Image
+
 
 # Download the VADER lexicon if you haven't already
 nltk.download('vader_lexicon')
@@ -81,6 +84,16 @@ try:
     );''')
 except:
      print("table exists, continuing")
+
+@app.route('/ocr', methods=['POST'])
+def ocr():
+    input_json = request.get_json(force=True)
+    image_base64 = input_json["image"]
+    print(image_base64[22:])
+    image_data = base64.b64decode(image_base64[22:])
+    image = Image.open(BytesIO(image_data))
+    image.save("image_file_path")
+    return jsonify({"message": "Image processed successfully"})
 
 
 @app.route('/search', methods=['POST'])

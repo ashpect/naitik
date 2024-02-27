@@ -6,7 +6,7 @@ import logo from "./logo.png";
 import FakeRevew from './components/bruh';
 import { useEffect, useState } from 'react';
 import DarkPatternSelector from './components/darkselector';
-
+import OCR from './components/pict';
 import Scrapper from './components/scrap';
 function App() {
 
@@ -135,6 +135,7 @@ function App() {
       <Dom/>
       <FakeRevew/>
       <Scrapper/>
+      <OCR/>
     </div>
 
     <p className="read-the-docs">

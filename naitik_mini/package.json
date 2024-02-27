@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@types/chart.js": "^2.9.41",
+    "axios": "^1.6.7",
     "chart.js": "^4.4.1",
     "node-fetch": "^3.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-drag-drop-files": "^2.3.10",
     "universal-cookie": "^7.0.2"
   },
   "devDependencies": {
