@@ -36,7 +36,8 @@ try:
         website_name VARCHAR(200),
         img VARCHAR(200),
         htmlcontent varchar(200),
-        tag VARCHAR(75)
+        tag VARCHAR(75),
+        vector VARCHAR(200)
     );''')
 except:
      print("table exists, continuing")
@@ -165,8 +166,11 @@ def reportpattern():
  
     tag = request.get_json()["darkpattern"]
     htmlcontent = request.get_json()["text"]
-    cur.execute('''INSERT INTO darkpatterns (website_name, img, htmlcontent, tag)
-                   VALUES (?, ?, ?,?)''', (website, path, htmlcontent, tag))
+    response = requests.post("http://localhost:8000/vectors",json={"text":htmlcontent})
+    vector = response.json().get("vector")
+    vector_str = ','.join(map(str, vector))
+    cur.execute('''INSERT INTO darkpatterns (website_name, img, htmlcontent, tag, vector)
+                   VALUES (?, ?, ?,?, ?)''', (website, path, htmlcontent, tag, vector_str))
     con.commit()
     return "Thank you for reporting the dark pattern!"
 
