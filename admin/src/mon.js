@@ -21,24 +21,24 @@ const Bruh = () => {
     <div style={{ margin: '4rem auto', width: '80%' }}>
     <Table variant="simple">
       <Thead>
-      <Tr style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>          
-            <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Website Name</Th>
-          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Forced Action</Th>
-          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Misdirection</Th>
-          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Obstruction</Th>
-          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Scarcity</Th>
-          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Sneaking</Th>
-          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Social Proof</Th>
-          <Th style={{ backgroundColor: '#53389E', color: '#FFF', important: 'true' }}>Urgency</Th>
+      <Tr style={{ color: '#000', important: 'true' }}>          
+            <Th style={{  color: '#000', important: 'true' }}>Website Name</Th>
+          <Th style={{color: '#000', important: 'true' }}>Forced Action</Th>
+          <Th style={{  color: '#000', important: 'true' }}>Misdirection</Th>
+          <Th style={{ color: '#000', important: 'true' }}>Obstruction</Th>
+          <Th style={{ color: '#000', important: 'true' }}>Scarcity</Th>
+          <Th style={{  color: '#000', important: 'true' }}>Sneaking</Th>
+          <Th style={{  color: '#000', important: 'true' }}>Social Proof</Th>
+          <Th style={{ color: '#000', important: 'true' }}>Urgency</Th>
         </Tr>
       </Thead>
       <Tbody>
             {patterns.map(pattern => (
               <Tr key={pattern.id}>
                 <Td>
-                  <Button style={{backgroundColor:"#53389E", color:"white"}} >
+                  <b>
                     {pattern.website_name}
-                  </Button>
+                    </b>
                 </Td>
                 <Td>{pattern.forced_action}</Td>
                 <Td>{pattern.misdirection}</Td>
