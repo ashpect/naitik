@@ -39,7 +39,9 @@ function OCR() {
       const reader = new FileReader();
       reader.onload = (event) => {
         const base64String = event.target?.result as string;
+        console.log(base64String)
         setImage(base64String);
+        
         localStorage.setItem("uploadedImage", base64String);
       };
       reader.readAsDataURL(file);

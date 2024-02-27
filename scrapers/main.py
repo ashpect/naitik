@@ -91,10 +91,11 @@ except:
 def ocr():
     input_json = request.get_json(force=True)
     image_base64 = input_json["image"]
-    print(image_base64[22:])
     image_data = base64.b64decode(image_base64[22:])
     image = Image.open(BytesIO(image_data))
-    image.save("image_file_path")
+    # Specify the image format explicitly
+    image_format = "PNG"  # Assuming the image format is PNG, you can change it accordingly
+    image.save("image_file_path.png", format=image_format)
     return jsonify({"message": "Image processed successfully"})
 
 
