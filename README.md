@@ -1,19 +1,29 @@
-# NAITIK
+# DarkMatter
+A clone of naitik, dark pattern buster with features such as price analysis, checkbox unchecker, etc. Integration of Gemini Nano ✨
 
-A Dark Pattern Buster
-
-
-## Setup
-## Admin
-
+## Setup Instructions
+### Admin Dashboard
+```
+cd admin
 npm i
 npm start
+```
 
-## Client
-Naitik Mini is our extention client side. It is a chrome extention.
-To load the extention, go to chrome://extensions/ and load the dist folder.
+### Chrome Extension
+In order to setup the chrome extension.
+```
+cd naitik_mini
+npm i
 npm run build
-then load from browser
+```
+Go to `chrome://extensions/` and load the dist folder.
 
-## Server
+### Server
+```
+cd scrapers
 python3 main.py
+```
+
+## Current Objectives
+- [ ] Select the features that will be in the newer version of extension.
+- [ ] Do the false urgency feature using gemini nano.
