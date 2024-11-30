@@ -36,12 +36,21 @@ function Checkbox() {
             iterateAndPopulateMap(node);
             console.log("Node id content Map")
             console.log(nodeIdContentMap);
+
+
+            console.log("Declaring mock content map");
+          //   nodeIdContentMap = {
+          //     "root-1-3-1-3-1-2-0-0-3-2-6-3-2": "LIMITED TIME>> Harvest Season Specials",
+          //     "root-1-3-1-3-1-2-0-0-3-2-6-3-3": "HURRY>> Offer Ends Nov 30th",
+          //     "root-1-3-1-3-1-2-0-0-3-2-6-4": "88 Viewing This Product",
+          // }
             
             // TODO ?? Basic clean map abhi (doable) or clean from backend? Depends on size of req and shit as poora content tree bhejna umm.
 
             // make request
-            makeApiRequest(nodeIdContentMap)
+            askNano(nodeIdContentMap)
               .then(results => {
+                console.log(results);
                 for (const key in results) {
                   if (results.hasOwnProperty(key)) {
                       const value = results[key];
@@ -60,18 +69,6 @@ function Checkbox() {
                         boxDiv.innerText = value;
                         const textWidth = boxDiv.offsetWidth;
                         boxDiv.style.width = `${textWidth}px`;
-
-                        // element.style.border = '3px solid red';
-                        // console.log(element.innerText);
-                        // const boxDiv = document.createElement('div');
-                        // boxDiv.style.width = '50px'; 
-                        // boxDiv.style.height = '50px'; 
-                        // boxDiv.style.border = '3px solid blue';
-                        // boxDiv.style.position = 'absolute';
-                        // boxDiv.style.left = `${element.offsetLeft + element.offsetWidth + 10}px`;
-                        // boxDiv.style.top = `${element.offsetTop}px`;
-                        // boxDiv.innerText = value;
-                        // document.body.appendChild(boxDiv);
 
                         if (element.parentNode) {
                           element.parentNode.appendChild(boxDiv);
@@ -128,55 +125,165 @@ function Checkbox() {
               }
           }
 
-          async function makeApiRequest(requestbody:{ [key: string]: string }) {
-            const apiUrl = 'http://127.0.0.1:5000/checkdarkpattern';
+          //First I will assume that I have an askNano function that takes the content map and returns the dark patterns ka map
+          async function askNano(requestbody:{ [key: string]: string }) {
 
-            console.log(requestbody)
+            const allowedValues = [
+              "LIMITED TIME>> Harvest Season Specials ",
+              "HURRY>> Offer Ends Nov 30th ",
+            ];
 
-          //   const allowedValues = [
-          //     "LIMITED TIME>> Best Deals of The Year",
-          //     "Best Deals of The Year",
-          //     "HURRY>> Offer Ends Jan 30th",
-          //     "Offer Ends Jan 30th",
-          //     "EASY RETURNS: **30 Days Money Back Guaranteed** FREE SHIPPING: **All Continental USA** GUARANTEE: **We will BEAT OR MATCH any Price on This Unit!** QUICK FINANCING APPLICATION: 0% APR available* TRADE & VOLUME DISCOUNTS: ** Call or Chat for Details**",
-          //     "EASY RETURNS: **30 Days Money Back Guaranteed**",
-          //     "FREE SHIPPING: **All Continental USA**",
-          //     "GUARANTEE: **We will BEAT OR MATCH any Price on This Unit!**",
-          //     "QUICK FINANCING APPLICATION: 0% APR available*",
-          //     "TRADE & VOLUME DISCOUNTS: ** Call or Chat for Details**",
-          // ];
-          
-            // const filteredRequestBody = Object.fromEntries(
-            //   Object.entries(requestbody).filter(([_, value]) => allowedValues.includes(value))
-            // );
-
-            // console.log("filteredReqBody")
-            // console.log(filteredRequestBody)
-
-            const finalRequestBody = {
-              website_url: window.location.href,
-              data: requestbody
-            };
-
-            const requestOptions = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(finalRequestBody)
-            };
-        
-            try {
-                const response = await fetch(apiUrl, requestOptions);
-                if (!response.ok) {
-                    throw new Error(`API request failed with status: ${response.status}`);
+            const filteredRequestBody = Object.fromEntries(
+              Object.entries(requestbody).filter(([_, value]) => allowedValues.includes(value))
+            );
+            console.log("-----------------filteredReqBody-----------------------");
+            console.log(filteredRequestBody);
+            console.log("-------------------------------------------------------");
+            const cleanedMap = cleanup(filteredRequestBody);
+            console.log("-----------------cleanedMap-----------------------");
+            console.log(cleanedMap);
+            console.log("-------------------------------------------------------");
+            if (requestbody) {
+              var resultMap: { [key: string]: string } = {};
+              for (const key in cleanedMap) {
+                if (cleanedMap.hasOwnProperty(key)) {
+                  resultMap[key] = 'Urgency';
                 }
-                return response.json();
-
-            } catch (error:any) {
-                console.error('Error making API request:', error.message);
+              }
+            return resultMap;
             }
+          }
+
+          function cleanup(inputDict: { [key: string]: string }) {
+            var filteredDict: { [key: string]: string } = {};
+        
+            for (var key in inputDict) {
+                if (!inputDict.hasOwnProperty(key)) continue;
+        
+                var value = inputDict[key];
+        
+                // Skip if value is a single space, contains '{', or is longer than 156 characters
+                if (value === " " || value.indexOf('{') !== -1 || value.length > 156) {
+                    continue;
+                }
+        
+                // Check if value starts with an alphanumeric character, a letter, or a space
+                if (value && (value[0].match(/^[a-zA-Z0-9 ]$/) || value[0] === ' ')) {
+                    filteredDict[key] = value;
+                }
+            }
+        
+            // Further filter out keys where '{' is in the first 30 characters of the value
+        
+            // Call cleanusingtries on the filtered dictionary
+            var cleanedMap = cleanUsingTries(filteredDict);
+        
+            return cleanedMap;
         }
+
+        function cleanUsingTries(A: { [key: string]: string }): { [key: string]: string } {
+          // Strip whitespace from values
+          for (const a in A) {
+              if (A.hasOwnProperty(a)) {
+                  A[a] = A[a].trim();
+              }
+          }
+      
+          // Sort the keys
+          const L = Object.keys(A).sort();
+      
+          // Initialize root and B
+          const root: { [key: number]: [Record<number, any>, string] } = {};
+          const B: { [key: string]: string } = {};
+      
+          // Process each key in L
+          for (const l of L) {
+              const V = l.split('-');
+              if (V.length < 2) {
+                  continue; // Skip keys without '-'
+              }
+      
+              let pre: { [key: number]: [Record<number, any>, string] } | null = null;
+              let cur: Record<number, any> = root;
+      
+              for (let i = 1; i < V.length; i++) {
+                  const v = parseInt(V[i]);
+                  if (isNaN(v)) {
+                      continue; // Skip invalid numbers
+                  }
+                  if (v in cur) {
+                      if (cur[v][1] === A[l]) {
+                          break;
+                      }
+                      pre = cur;
+                      cur = cur[v][0];
+                      continue;
+                  } else {
+                      cur[v] = [{}, "INVALID"];
+                      pre = cur;
+                      cur = cur[v][0];
+                      continue;
+                  }
+              }
+      
+              // If the loop didn't break, update the last node
+              if (pre !== null) {
+                  const lastV = parseInt(V[V.length - 1]);
+                  if (!isNaN(lastV) && pre.hasOwnProperty(lastV)) {
+                      pre[lastV][1] = A[l];
+                      B[l] = A[l];
+                  }
+              }
+          }
+      
+          return B;
+      }
+
+          
+
+        //   async function makeApiRequest(requestbody:{ [key: string]: string }) {
+        //     const apiUrl = 'http://127.0.0.1:5000/checkdarkpattern';
+
+        //     console.log(requestbody)
+
+        //     const allowedValues = [
+        //       "LIMITED TIME>> Harvest Season Specials ",
+        //       "HURRY>> Offer Ends Nov 30th ",
+        //       "Viewing This Product",
+        //   ];
+          
+        //     const filteredRequestBody = Object.fromEntries(
+        //       Object.entries(requestbody).filter(([_, value]) => allowedValues.includes(value))
+        //     );
+
+        //     // console.log("filteredReqBody")
+        //     // console.log(filteredRequestBody)
+
+        //     const finalRequestBody = {
+        //       website_url: window.location.href,
+        //       data: filteredRequestBody
+        //     };
+
+        //     const requestOptions = {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify(finalRequestBody)
+        //     };
+        
+        //     try {
+        //         const response = await fetch(apiUrl, requestOptions);
+        //         if (!response.ok) {
+        //             throw new Error(`API request failed with status: ${response.status}`);
+        //         }
+                
+        //         return response.json();
+
+        //     } catch (error:any) {
+        //         console.error('Error making API request:', error.message);
+        //     }
+        // }
 
         function cleanContent(content:string) : boolean {
           // write cleaning logic here

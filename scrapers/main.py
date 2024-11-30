@@ -311,22 +311,40 @@ def checkdarkpattern():
         #write input_json['data'] to disk
         
         input_json['data'] = cleanup(input_json['data'])
-        write_dictionary_to_file(input_json['data'],"/Users/ashishkumarsingh/Desktop/dark/naitik/scrapers/naitikdata.txt")
+
+        # input_json['data'] = dict(list(input_json['data'].items())[:40])
+        
+        print('*'*20)
+        print('*'*20)
+        print('*'*20)
+        print(input_json['data'])
+        print('*'*20)
+        print('*'*20)
+        print('*'*20)
+        write_dictionary_to_file(input_json['data'],"naitikdata.txt")
 
         result_list = {
         }
 
         #for website : https://electricfireplacesdepot.com/collections/electric-fireboxe-inserts/products/dimplex-revillusion-36-inch-built-in-electric-fireplace-firebox-heater-rbf36#
-        input_json['data'] = {
-            "root-1-1-1-3-1-2-0-0-3-2-6-3-2-1": "LIMITED TIME>> Best Deals of The Year ",
-            "root-1-1-1-3-1-2-0-0-3-2-6-3-3": "HURRY>> Offer Ends Jan 30th ",
-            "root-1-1-1-3-1-2-0-0-3-2-6-3-4-0": " EASY RETURNS: **30 Days Money Back Guaranteed**",
-            "root-1-1-1-3-1-2-0-0-3-2-6-3-4-1": " FREE SHIPPING: **All Continental USA**",
-            "root-1-1-1-3-1-2-0-0-3-2-6-3-4-3": " QUICK FINANCING APPLICATION: 0% APR available*",
-            "root-1-1-1-3-1-2-0-0-3-2-6-3-4-4": " TRADE & VOLUME DISCOUNTS: ** Call or Chat for Details**",
-            "root-1-1-1-3-1-2-0-0-3-2-6-3-4-2": " GUARANTEE: **We will BEAT OR MATCH any Price on This Unit!**",
-            "root-1-1-1-3-1-2-0-0-3-2-6-4": "82 Viewing This Product",
-        }
+        # input_json['data'] = {
+        #     "root-1-3-1-3-1-2-0-0-3-2-6-3-2": "LIMITED TIME>> Harvest Season Specials",
+        #     "root-1-3-1-3-1-2-0-0-3-2-6-3-3": "HURRY>> Offer Ends Nov 30th",
+        #     "root-1-3-1-3-1-2-0-0-3-2-6-4": "88 Viewing This Product",
+        # }
+        
+        
+        
+        # input_json['data'] = {
+        #     "root-1-1-1-3-1-2-0-0-3-2-6-3-2-1": "LIMITED TIME>> Best Deals of The Year ",
+        #     "root-1-1-1-3-1-2-0-0-3-2-6-3-3": "HURRY>> Offer Ends Jan 30th ",
+        #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4-0": " EASY RETURNS: **30 Days Money Back Guaranteed**",
+        #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4-1": " FREE SHIPPING: **All Continental USA**",
+        #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4-3": " QUICK FINANCING APPLICATION: 0% APR available*",
+        #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4-4": " TRADE & VOLUME DISCOUNTS: ** Call or Chat for Details**",
+        #     "root-1-1-1-3-1-2-0-0-3-2-6-3-4-2": " GUARANTEE: **We will BEAT OR MATCH any Price on This Unit!**",
+        #     "root-1-1-1-3-1-2-0-0-3-2-6-4": "82 Viewing This Product",
+        # }
         
         for key, value in input_json["data"].items():
             print(value)
@@ -355,7 +373,7 @@ def checkdarkpattern():
         # wesbite_url = input_json["website_url"]
         
         populateDbWithResult(result_list,input_json["website_url"])
-        write_dictionary_to_file(result_list,"/Users/ashishkumarsingh/Desktop/dark/naitik/scrapers/naitikfinal.txt")
+        write_dictionary_to_file(result_list,"naitikfinal.txt")
         print(result_list)
 
         return jsonify(result_list)
@@ -392,7 +410,8 @@ def cleanusingtries(A):
         for i in range ( 1, len (V) ):
             v = int(V[i])
             if v in cur :
-                if cur[v][1] == A[l] : break
+                if cur[v][1] == A[l]:
+                    break
                 pre = cur ; cur = cur[v][0] ; continue
             else :
                 cur[v] = [ {} , "INVALID" ]
