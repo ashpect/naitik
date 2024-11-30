@@ -1,5 +1,6 @@
 import Card from "./card";
 import tag from "../Tag.png"
+
 function Checkbox() {
 
     interface TreeNode {
@@ -9,6 +10,65 @@ function Checkbox() {
       content: string;
       nodeType: string; // adjust the type if needed
     }
+
+
+    let session: chrome.aiOriginTrial.languageModel.Session | null = null;
+
+// Define the input format type
+interface InputData {
+  [id: string]: string;
+}
+
+// Function to process each sentence and get the response
+async function analyzeDarkPatterns(inputData: InputData): Promise<{ [id: string]: string }> {
+  console.log('Analyzing dark patterns...somyaaaaaaaaaaaaaaaaaaa');
+  const results: { [id: string]: string } = {};
+
+  // Iterate through each sentence with its ID
+  for (const [id, sentence] of Object.entries(inputData)) {
+    const prompt = sentence.trim();
+    
+    // Prepare parameters for API call
+    const params = {
+      systemPrompt: 'Analyze the given text to identify whether it contains any dark patterns...',
+      temperature: parseFloat('1'),  // Default to 0 if null
+      topK: parseInt('3'),  // Default to 0 if null
+    };
+
+    try {
+      const response = await runPrompt('The given string is: ' + prompt, params);
+      results[id] = response;  // Store response with the ID
+    } catch (e) {
+      results[id] = 'Error: ' + (e instanceof Error ? e.message : 'Unknown error');  // Handle error and return it for this sentence
+    }
+  }
+
+  return results;
+}
+
+async function runPrompt(prompt: string, params: any): Promise<string> {
+  try {
+    if (!session) {
+      console.log('Creating new session');
+      session = await chrome.aiOriginTrial.languageModel.create(params);
+    }
+    return session.prompt(prompt);
+  } catch (e) {
+    console.log('Prompt failed');
+    console.error(e);
+    console.log('Prompt:', prompt);
+    // Reset session
+    await reset();
+    throw e;
+  }
+}
+
+async function reset(): Promise<void> {
+  if (session) {
+    session.destroy();
+  }
+  session = null;
+}
 
     const handleClick = async () => {
       let [tab] = await chrome.tabs.query({ active : true });
@@ -143,16 +203,33 @@ function Checkbox() {
             console.log("-----------------cleanedMap-----------------------");
             console.log(cleanedMap);
             console.log("-------------------------------------------------------");
+            
+
+
             if (requestbody) {
               var resultMap: { [key: string]: string } = {};
-              for (const key in cleanedMap) {
-                if (cleanedMap.hasOwnProperty(key)) {
-                  resultMap[key] = 'Urgency';
+              
+              
+              try {
+                const darkPatternsResults = await analyzeDarkPatterns(cleanedMap);
+                console.log("-----------------darkPatternsResults-----------------------");
+            
+                // Populate resultMap with the responses from analyzeDarkPatterns
+                for (const key in cleanedMap) {
+                  if (cleanedMap.hasOwnProperty(key)) {
+                    resultMap[key] = darkPatternsResults[key] || 'Unknown';  // Use the result or 'Unknown' if no result
+                  }
                 }
+            
+                return resultMap;
+              } catch (e) {
+                // Handle any errors that occur during the analysis
+
+                return { error: 'Error analyzing dark patterns: ' + (e instanceof Error ? e.message : 'Unknown error') };
               }
-            return resultMap;
             }
           }
+            
 
           function cleanup(inputDict: { [key: string]: string }) {
             var filteredDict: { [key: string]: string } = {};
@@ -239,51 +316,6 @@ function Checkbox() {
           return B;
       }
 
-          
-
-        //   async function makeApiRequest(requestbody:{ [key: string]: string }) {
-        //     const apiUrl = 'http://127.0.0.1:5000/checkdarkpattern';
-
-        //     console.log(requestbody)
-
-        //     const allowedValues = [
-        //       "LIMITED TIME>> Harvest Season Specials ",
-        //       "HURRY>> Offer Ends Nov 30th ",
-        //       "Viewing This Product",
-        //   ];
-          
-        //     const filteredRequestBody = Object.fromEntries(
-        //       Object.entries(requestbody).filter(([_, value]) => allowedValues.includes(value))
-        //     );
-
-        //     // console.log("filteredReqBody")
-        //     // console.log(filteredRequestBody)
-
-        //     const finalRequestBody = {
-        //       website_url: window.location.href,
-        //       data: filteredRequestBody
-        //     };
-
-        //     const requestOptions = {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify(finalRequestBody)
-        //     };
-        
-        //     try {
-        //         const response = await fetch(apiUrl, requestOptions);
-        //         if (!response.ok) {
-        //             throw new Error(`API request failed with status: ${response.status}`);
-        //         }
-                
-        //         return response.json();
-
-        //     } catch (error:any) {
-        //         console.error('Error making API request:', error.message);
-        //     }
-        // }
 
         function cleanContent(content:string) : boolean {
           // write cleaning logic here
