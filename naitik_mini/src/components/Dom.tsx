@@ -11,65 +11,12 @@ function Checkbox() {
       nodeType: string; // adjust the type if needed
     }
 
-
-    let session: chrome.aiOriginTrial.languageModel.Session | null = null;
-
 // Define the input format type
 interface InputData {
   [id: string]: string;
 }
 
 // Function to process each sentence and get the response
-async function analyzeDarkPatterns(inputData: InputData): Promise<{ [id: string]: string }> {
-  console.log('Analyzing dark patterns...somyaaaaaaaaaaaaaaaaaaa');
-  const results: { [id: string]: string } = {};
-
-  // Iterate through each sentence with its ID
-  for (const [id, sentence] of Object.entries(inputData)) {
-    const prompt = sentence.trim();
-    
-    // Prepare parameters for API call
-    const params = {
-      systemPrompt: 'Analyze the given text to identify whether it contains any dark patterns...',
-      temperature: parseFloat('1'),  // Default to 0 if null
-      topK: parseInt('3'),  // Default to 0 if null
-    };
-
-    try {
-      const response = await runPrompt('The given string is: ' + prompt, params);
-      results[id] = response;  // Store response with the ID
-    } catch (e) {
-      results[id] = 'Error: ' + (e instanceof Error ? e.message : 'Unknown error');  // Handle error and return it for this sentence
-    }
-  }
-
-  return results;
-}
-
-async function runPrompt(prompt: string, params: any): Promise<string> {
-  try {
-    if (!session) {
-      console.log('Creating new session');
-      session = await chrome.aiOriginTrial.languageModel.create(params);
-    }
-    return session.prompt(prompt);
-  } catch (e) {
-    console.log('Prompt failed');
-    console.error(e);
-    console.log('Prompt:', prompt);
-    // Reset session
-    await reset();
-    throw e;
-  }
-}
-
-async function reset(): Promise<void> {
-  if (session) {
-    session.destroy();
-  }
-  session = null;
-}
-
     const handleClick = async () => {
       let [tab] = await chrome.tabs.query({ active : true });
       // giving generic params to executeScript for handling args
@@ -184,6 +131,64 @@ async function reset(): Promise<void> {
               iterateAndPopulateMap(node.children[i]);
               }
           }
+
+          var session: ai.languageModel.Session | null = null;
+
+          async function analyzeDarkPatterns(inputData: InputData): Promise<{ [id: string]: string }> {
+            console.log('Analyzing dark patterns...somyaaaaaaaaaaaaaaaaaaa');
+            const results: { [id: string]: string } = {};
+          
+            // Iterate through each sentence with its ID
+            for (const [id, sentence] of Object.entries(inputData)) {
+              const prompt = sentence.trim();
+              
+              // Prepare parameters for API call
+              const params = {
+                //systemPrompt: 'Analyze the given text to identify whether it contains any dark patterns, which are deceptive or manipulative tactics aimed at influencing user behavior.\nCategorize the text as either "None (Safe)" if it does not appear to be a dark pattern, or "Dark Pattern" if it seems to be manipulative, even if the statement is technically true. Do not provide any explaination. \nConsider factors like creating false urgency, emotional manipulation, scarcity tactics, or attempts to mislead users.\nBe especially vigilant for subtle tactics that might exploit psychological biases or create a sense of urgency or fear of missing out.\nExamples of dark patterns include:\n"Hurry! Only 2 items left at this price!"\n"You have already saved $50! Complete your purchase now."\n"Thousands of people are viewing this product right now!"\n"Limited time offer: 10 minutes remaining!"',
+
+                systemPrompt: 'Analyze the given text to identify whether it employs any dark patterns, which are deceptive or manipulative tactics aimed at influencing user behavior.\nClassify the text into one of the following categories:\n\nforced_action: Requires users to take an action they might not want to in order to proceed.\nmisdirection: Distracts or misleads users to make them take actions they might not otherwise take.\nnot_dark_pattern: Safe and does not contain manipulative tactics.\nobstruction: Makes it deliberately difficult for users to complete a task or opt-out of something.\nscarcity: Creates a false sense of limited availability to pressure users.\nsneaking: Hides information or sneaks something into the user’s experience without their knowledge.\nsocial_proof: Uses peer pressure or perceived popularity to influence decisions.\nfake_urgency: Instills a sense of time pressure to push immediate action.\n\nDo not provide any explanation; simply classify the text into one of the above categories. Be especially vigilant for subtle tactics that exploit psychological biases, such as creating urgency, fear of missing out, or leveraging social proof.\n\nExamples:\n1. Forced Action\n"To access your account, you must agree to receive promotional emails."\n\n2. Misdirection\n"Click here to confirm your refund." (Button actually signs up for a subscription instead of processing a refund.)\n\n3. Not Dark Pattern\n"Your session will expire in 10 minutes for security reasons. Please log in again to continue."\n\n4. Obstruction\n"To unsubscribe, please send a handwritten letter to our office."\n\n5. Scarcity\n"Only 3 items left in stock—order now to avoid missing out!"\n\n6. Sneaking\n"By clicking Accept, you also agree to a free trial subscription that auto-renews after 7 days."\n\n7. Social Proof\n"1,000 people have purchased this product in the last hour!"\n\n8. Fake Urgency\n"Hurry! This offer expires in the next 5 minutes!"',
+                temperature: parseFloat('1'),  // Default to 0 if null
+                topK: parseInt('3'),  // Default to 0 if null
+              };
+          
+              try {
+                const response = await runPrompt('The given string is: ' + prompt, params);
+                results[id] = response;  // Store response with the ID
+              } catch (e) {
+                results[id] = 'Error: ' + (e instanceof Error ? e.message : 'Unknown error');  // Handle error and return it for this sentence
+              }
+            }
+          
+            return results;
+          }
+          
+          async function runPrompt(prompt: string, params: any): Promise<string> {
+            try {
+              if (!session) {
+                console.log('Creating new session');
+                session = await ai.languageModel.create(params);
+              }
+
+              console.log('Running prompt:', prompt);
+              return session.prompt(prompt);
+            } catch (e) {
+              console.log('Prompt failed');
+              console.error(e);
+              console.log('Prompt:', prompt);
+              // Reset session
+              await reset();
+              throw e;
+            }
+          }
+          
+          async function reset(): Promise<void> {
+            if (session) {
+              session.destroy();
+            }
+            session = null;
+          }
+          
+          
 
           //First I will assume that I have an askNano function that takes the content map and returns the dark patterns ka map
           async function askNano(requestbody:{ [key: string]: string }) {
